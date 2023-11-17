@@ -165,6 +165,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#working-with-glimpse" id="toc-working-with-glimpse" class="nav-link" data-scroll-target="#working-with-glimpse"><strong>Working with glimpse</strong></a></li>
   <li><a href="#working-with-head" id="toc-working-with-head" class="nav-link" data-scroll-target="#working-with-head"><strong>Working with <em>head</em></strong></a></li>
   </ul></li>
+  <li><a href="#plotting-the-geospatial-data" id="toc-plotting-the-geospatial-data" class="nav-link" data-scroll-target="#plotting-the-geospatial-data"><strong>Plotting the Geospatial Data</strong></a>
+  <ul class="collapse">
+  <li><a href="#importing-the-aspatial-data" id="toc-importing-the-aspatial-data" class="nav-link" data-scroll-target="#importing-the-aspatial-data"><strong>Importing the aspatial data</strong></a></li>
+  <li><a href="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" id="toc-creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="nav-link" data-scroll-target="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame"><strong>Creating a simple feature data frame from an aspatial data frame</strong></a></li>
+  <li><a href="#buffering" id="toc-buffering" class="nav-link" data-scroll-target="#buffering"><strong>Buffering</strong></a></li>
+  <li><a href="#point-in-polygon-count" id="toc-point-in-polygon-count" class="nav-link" data-scroll-target="#point-in-polygon-count"><strong>Point-in-polygon count</strong></a></li>
+  </ul></li>
+  <li><a href="#explorotary-data-analysis-eda" id="toc-explorotary-data-analysis-eda" class="nav-link" data-scroll-target="#explorotary-data-analysis-eda"><strong>Explorotary Data Analysis (EDA)</strong></a></li>
   </ul>
 </nav>
     </div>
@@ -337,9 +345,390 @@ Projected CRS: SVY21
 5 30005.70   2825.594   387429.4 MULTIPOLYGON (((26451.03 30...</code></pre>
 </div>
 </div>
-
-
 </section>
+</section>
+<section id="plotting-the-geospatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-the-geospatial-data"><strong>Plotting the Geospatial Data</strong></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: plotting the first 9 out of 15 attributes; use max.plot = 15 to plot
+all</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mpsz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mpsz[<span class="st">"PLN_AREA_N"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: SVY21 
+  wkt:
+PROJCRS["SVY21",
+    BASEGEOGCRS["SVY21[WGS84]",
+        DATUM["World Geodetic System 1984",
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]],
+            ID["EPSG",6326]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["Degree",0.0174532925199433]]],
+    CONVERSION["unnamed",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",1.36666666666667,
+            ANGLEUNIT["Degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",103.833333333333,
+            ANGLEUNIT["Degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",1,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",28001.642,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",38744.572,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["(E)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1,
+                ID["EPSG",9001]]],
+        AXIS["(N)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1,
+                ID["EPSG",9001]]]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: SVY21 
+  wkt:
+PROJCRS["SVY21",
+    BASEGEOGCRS["SVY21[WGS84]",
+        DATUM["World Geodetic System 1984",
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]],
+            ID["EPSG",6326]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["Degree",0.0174532925199433]]],
+    CONVERSION["unnamed",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",1.36666666666667,
+            ANGLEUNIT["Degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",103.833333333333,
+            ANGLEUNIT["Degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",1,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",28001.642,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",38744.572,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["(E)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1,
+                ID["EPSG",9001]]],
+        AXIS["(N)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1,
+                ID["EPSG",9001]]]]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> <span class="fu">st_set_crs</span>(mpsz, <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: st_crs&lt;- : replacing crs does not reproject data; use st_transform for
+that</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(mpsz3414)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: EPSG:3414 
+  wkt:
+PROJCRS["SVY21 / Singapore TM",
+    BASEGEOGCRS["SVY21",
+        DATUM["SVY21",
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4757]],
+    CONVERSION["Singapore Transverse Mercator",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",1.36666666666667,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",103.833333333333,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",1,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",28001.642,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",38744.572,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["northing (N)",north,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["easting (E)",east,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    USAGE[
+        SCOPE["Cadastre, engineering survey, topographic mapping."],
+        AREA["Singapore - onshore and offshore."],
+        BBOX[1.13,103.59,1.47,104.07]],
+    ID["EPSG",3414]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>preschool3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(preschool, </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="importing-the-aspatial-data" class="level3">
+<h3 class="anchored" data-anchor-id="importing-the-aspatial-data"><strong>Importing the aspatial data</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>listings <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/listings.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 3483 Columns: 75
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (26): listing_url, source, name, description, neighborhood_overview, pi...
+dbl  (37): id, scrape_id, host_id, host_listings_count, host_total_listings_...
+lgl   (7): host_is_superhost, host_has_profile_pic, host_identity_verified, ...
+date  (5): last_scraped, host_since, calendar_last_scraped, first_review, la...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(listings) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+# A tibble: 3,483 × 75
+       id listing_url            scrape_id last_scraped source name  description
+    &lt;dbl&gt; &lt;chr&gt;                      &lt;dbl&gt; &lt;date&gt;       &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;      
+ 1  71609 https://www.airbnb.co…   2.02e13 2023-09-23   previ… Vill… For 3 room…
+ 2  71896 https://www.airbnb.co…   2.02e13 2023-09-23   previ… Home… &lt;b&gt;The spa…
+ 3  71903 https://www.airbnb.co…   2.02e13 2023-09-23   previ… Home… Like your …
+ 4 275343 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… **IMPORTAN…
+ 5 275344 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… Lovely hom…
+ 6 289234 https://www.airbnb.co…   2.02e13 2023-09-23   previ… Home… This whole…
+ 7 294281 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… I have 3 b…
+ 8 324945 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… **IMPORTAN…
+ 9 330095 https://www.airbnb.co…   2.02e13 2023-09-23   city … Rent… **IMPORTAN…
+10 369141 https://www.airbnb.co…   2.02e13 2023-09-23   city … Plac… A room in …
+# ℹ 3,473 more rows
+# ℹ 68 more variables: neighborhood_overview &lt;chr&gt;, picture_url &lt;chr&gt;,
+#   host_id &lt;dbl&gt;, host_url &lt;chr&gt;, host_name &lt;chr&gt;, host_since &lt;date&gt;,
+#   host_location &lt;chr&gt;, host_about &lt;chr&gt;, host_response_time &lt;chr&gt;,
+#   host_response_rate &lt;chr&gt;, host_acceptance_rate &lt;chr&gt;,
+#   host_is_superhost &lt;lgl&gt;, host_thumbnail_url &lt;chr&gt;, host_picture_url &lt;chr&gt;,
+#   host_neighbourhood &lt;chr&gt;, host_listings_count &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame"><strong>Creating a simple feature data frame from an aspatial data frame</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>listings_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(listings, </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">crs=</span><span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(listings_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 3,483
+Columns: 74
+$ id                                           &lt;dbl&gt; 71609, 71896, 71903, 2753…
+$ listing_url                                  &lt;chr&gt; "https://www.airbnb.com/r…
+$ scrape_id                                    &lt;dbl&gt; 2.023092e+13, 2.023092e+1…
+$ last_scraped                                 &lt;date&gt; 2023-09-23, 2023-09-23, …
+$ source                                       &lt;chr&gt; "previous scrape", "previ…
+$ name                                         &lt;chr&gt; "Villa in Singapore · ★4.…
+$ description                                  &lt;chr&gt; "For 3 rooms.Book room 1&amp;…
+$ neighborhood_overview                        &lt;chr&gt; NA, NA, "Quiet and view o…
+$ picture_url                                  &lt;chr&gt; "https://a0.muscache.com/…
+$ host_id                                      &lt;dbl&gt; 367042, 367042, 367042, 1…
+$ host_url                                     &lt;chr&gt; "https://www.airbnb.com/u…
+$ host_name                                    &lt;chr&gt; "Belinda", "Belinda", "Be…
+$ host_since                                   &lt;date&gt; 2011-01-29, 2011-01-29, …
+$ host_location                                &lt;chr&gt; "Singapore", "Singapore",…
+$ host_about                                   &lt;chr&gt; "Hi My name is Belinda -H…
+$ host_response_time                           &lt;chr&gt; "within a few hours", "wi…
+$ host_response_rate                           &lt;chr&gt; "100%", "100%", "100%", "…
+$ host_acceptance_rate                         &lt;chr&gt; "100%", "100%", "100%", "…
+$ host_is_superhost                            &lt;lgl&gt; FALSE, FALSE, FALSE, FALS…
+$ host_thumbnail_url                           &lt;chr&gt; "https://a0.muscache.com/…
+$ host_picture_url                             &lt;chr&gt; "https://a0.muscache.com/…
+$ host_neighbourhood                           &lt;chr&gt; "Tampines", "Tampines", "…
+$ host_listings_count                          &lt;dbl&gt; 5, 5, 5, 52, 52, 5, 7, 52…
+$ host_total_listings_count                    &lt;dbl&gt; 15, 15, 15, 65, 65, 15, 8…
+$ host_verifications                           &lt;chr&gt; "['email', 'phone']", "['…
+$ host_has_profile_pic                         &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, T…
+$ host_identity_verified                       &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, T…
+$ neighbourhood                                &lt;chr&gt; NA, NA, "Singapore, Singa…
+$ neighbourhood_cleansed                       &lt;chr&gt; "Tampines", "Tampines", "…
+$ neighbourhood_group_cleansed                 &lt;chr&gt; "East Region", "East Regi…
+$ property_type                                &lt;chr&gt; "Private room in villa", …
+$ room_type                                    &lt;chr&gt; "Private room", "Private …
+$ accommodates                                 &lt;dbl&gt; 3, 1, 2, 1, 1, 4, 2, 1, 1…
+$ bathrooms                                    &lt;lgl&gt; NA, NA, NA, NA, NA, NA, N…
+$ bathrooms_text                               &lt;chr&gt; "1 private bath", "Shared…
+$ bedrooms                                     &lt;dbl&gt; NA, NA, NA, NA, NA, 3, NA…
+$ beds                                         &lt;dbl&gt; 3, 1, 2, 1, 1, 5, 1, 1, 1…
+$ amenities                                    &lt;chr&gt; "[\"Private backyard \\u2…
+$ price                                        &lt;chr&gt; "$150.00", "$80.00", "$80…
+$ minimum_nights                               &lt;dbl&gt; 92, 92, 92, 60, 60, 92, 9…
+$ maximum_nights                               &lt;dbl&gt; 365, 365, 365, 999, 999, …
+$ minimum_minimum_nights                       &lt;dbl&gt; 92, 92, 92, 60, 60, 92, 9…
+$ maximum_minimum_nights                       &lt;dbl&gt; 92, 92, 92, 60, 60, 92, 9…
+$ minimum_maximum_nights                       &lt;dbl&gt; 1125, 1125, 1125, 1125, 1…
+$ maximum_maximum_nights                       &lt;dbl&gt; 1125, 1125, 1125, 1125, 1…
+$ minimum_nights_avg_ntm                       &lt;dbl&gt; 92, 92, 92, 60, 60, 92, 9…
+$ maximum_nights_avg_ntm                       &lt;dbl&gt; 1125, 1125, 1125, 1125, 1…
+$ calendar_updated                             &lt;lgl&gt; NA, NA, NA, NA, NA, NA, N…
+$ has_availability                             &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, T…
+$ availability_30                              &lt;dbl&gt; 28, 28, 28, 1, 30, 28, 30…
+$ availability_60                              &lt;dbl&gt; 58, 58, 58, 1, 60, 58, 60…
+$ availability_90                              &lt;dbl&gt; 88, 88, 88, 1, 90, 88, 90…
+$ availability_365                             &lt;dbl&gt; 89, 89, 89, 275, 274, 89,…
+$ calendar_last_scraped                        &lt;date&gt; 2023-09-23, 2023-09-23, …
+$ number_of_reviews                            &lt;dbl&gt; 20, 24, 47, 22, 17, 12, 1…
+$ number_of_reviews_ltm                        &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 1, 3…
+$ number_of_reviews_l30d                       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1…
+$ first_review                                 &lt;date&gt; 2011-12-19, 2011-07-30, …
+$ last_review                                  &lt;date&gt; 2020-01-17, 2019-10-13, …
+$ review_scores_rating                         &lt;dbl&gt; 4.44, 4.16, 4.41, 4.40, 4…
+$ review_scores_accuracy                       &lt;dbl&gt; 4.37, 4.22, 4.39, 4.16, 4…
+$ review_scores_cleanliness                    &lt;dbl&gt; 4.00, 4.09, 4.52, 4.26, 4…
+$ review_scores_checkin                        &lt;dbl&gt; 4.63, 4.43, 4.63, 4.47, 4…
+$ review_scores_communication                  &lt;dbl&gt; 4.78, 4.43, 4.64, 4.42, 4…
+$ review_scores_location                       &lt;dbl&gt; 4.26, 4.17, 4.50, 4.53, 4…
+$ review_scores_value                          &lt;dbl&gt; 4.32, 4.04, 4.36, 4.63, 4…
+$ license                                      &lt;chr&gt; NA, NA, NA, "S0399", "S03…
+$ instant_bookable                             &lt;lgl&gt; FALSE, FALSE, FALSE, TRUE…
+$ calculated_host_listings_count               &lt;dbl&gt; 5, 5, 5, 52, 52, 5, 7, 52…
+$ calculated_host_listings_count_entire_homes  &lt;dbl&gt; 0, 0, 0, 1, 1, 0, 1, 1, 1…
+$ calculated_host_listings_count_private_rooms &lt;dbl&gt; 5, 5, 5, 51, 51, 5, 6, 51…
+$ calculated_host_listings_count_shared_rooms  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ reviews_per_month                            &lt;dbl&gt; 0.14, 0.16, 0.31, 0.17, 0…
+$ geometry                                     &lt;POINT [m]&gt; POINT (41972.5 3639…</code></pre>
+</div>
+</div>
+</section>
+<section id="buffering" class="level3">
+<h3 class="anchored" data-anchor-id="buffering"><strong>Buffering</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>buffer_cycling <span class="ot">&lt;-</span> <span class="fu">st_buffer</span>(cyclingpath, </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">dist=</span><span class="dv">5</span>, <span class="at">nQuadSegs =</span> <span class="dv">30</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>buffer_cycling<span class="sc">$</span>AREA <span class="ot">&lt;-</span> <span class="fu">st_area</span>(buffer_cycling)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(buffer_cycling<span class="sc">$</span>AREA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1774367 [m^2]</code></pre>
+</div>
+</div>
+</section>
+<section id="point-in-polygon-count" class="level3">
+<h3 class="anchored" data-anchor-id="point-in-polygon-count"><strong>Point-in-polygon count</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span><span class="ot">&lt;-</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(mpsz3414, preschool3414))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   0.00    0.00    4.00    7.09   10.00   72.00 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">top_n</span>(mpsz3414, <span class="dv">1</span>, <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 16 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 39655.33 ymin: 35966 xmax: 42940.57 ymax: 38622.37
+Projected CRS: SVY21 / Singapore TM
+  OBJECTID SUBZONE_NO     SUBZONE_N SUBZONE_C CA_IND PLN_AREA_N PLN_AREA_C
+1      189          2 TAMPINES EAST    TMSZ02      N   TAMPINES         TM
+     REGION_N REGION_C          INC_CRC FMEL_UPD_D   X_ADDR   Y_ADDR SHAPE_Leng
+1 EAST REGION       ER 21658EAAF84F4D8D 2014-12-05 41122.55 37392.39   10180.62
+  SHAPE_Area                       geometry PreSch Count
+1    4339824 MULTIPOLYGON (((42196.76 38...           72</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>mpsz3414<span class="sc">$</span>Area <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_area</span>()</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span><span class="sc">/</span>Area <span class="sc">*</span> <span class="dv">1000000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="explorotary-data-analysis-eda" class="level2">
+<h2 class="anchored" data-anchor-id="explorotary-data-analysis-eda"><strong>Explorotary Data Analysis (EDA)</strong></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414, </span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>)))<span class="sc">+</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">20</span>, </span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color=</span><span class="st">"black"</span>, </span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill=</span><span class="st">"light blue"</span>) <span class="sc">+</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Are pre-school even distributed in Singapore?"</span>,</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle=</span> <span class="st">"There are many planning sub-zones with a single pre-school, on the other hand, </span><span class="sc">\n</span><span class="st">there are two planning sub-zones with at least 20 pre-schools"</span>,</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">"Frequency"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414, </span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>, </span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">x=</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>)))<span class="sc">+</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color=</span><span class="st">"black"</span>, </span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill=</span><span class="st">"light blue"</span>) <span class="sc">+</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">""</span>,</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">"Pre-school count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 2 rows containing missing values (`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
