@@ -22,3 +22,37 @@ pacman::p_load(sf,tidyverse)
 ```{r}
 mpsz <- st_read(dsn = "data/geospatial",layer="MP14_SUBZONE_WEB_PL")
 ```
+
+### **Importing polyline feature data in shapefile form**
+
+```{r}
+cyclingpath = st_read(dsn = "data/geospatial", 
+                         layer = "CyclingPathGazette")
+```
+
+### **Importing GIS data in kml format**
+
+```{r}
+preschool = st_read("data/geospatial/preschoolslocation.kml")
+
+```
+
+## **Checking the Content of A Simple Feature Data Frame**
+
+### **Working with *st_geometry()***
+
+```{r}
+st_geometry(mpsz)
+```
+
+### **Working with glimpse**
+
+```{r}
+glimpse(mpsz)
+```
+
+### **Working with *head***
+
+```{r}
+head(mpsz, n=5)  
+```
