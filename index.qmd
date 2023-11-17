@@ -1,0 +1,13 @@
+---
+title: "ISSS624"
+---
+
+This is a Quarto website.
+
+welcome to ISSS624 Geospatial Analytics
+
+To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+
+```{r}
+1 + 1
+```
