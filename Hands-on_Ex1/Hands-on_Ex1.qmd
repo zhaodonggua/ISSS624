@@ -2,7 +2,7 @@
 title: "Hands-on Exercise 1:Geospatial Data Wrangling with R"
 ---
 
-## Overview 
+## Overview
 
 In this Hands-on Exercise,I learn how to import and wrangling geospatial data using appropiate R packages.
 
@@ -89,7 +89,7 @@ preschool3414 <- st_transform(preschool,
                               crs = 3414)
 ```
 
-###  **Importing the aspatial data**
+### **Importing the aspatial data**
 
 ```{r}
 listings <- read_csv("data/aspatial/listings.csv")
@@ -132,7 +132,7 @@ mpsz3414 <- mpsz3414 %>%
   mutate(`PreSch Density` = `PreSch Count`/Area * 1000000)
 ```
 
-##  **Explorotary Data Analysis (EDA)**
+## **Explorotary Data Analysis (EDA)**
 
 ```{r}
 hist(mpsz3414$`PreSch Density`)
@@ -161,4 +161,69 @@ ggplot(data=mpsz3414,
   labs(title = "",
       x = "Pre-school density (per km sq)",
       y = "Pre-school count")
+```
+
+```{r}
+pacman::p_load(sf, tmap, tidyverse)
+library(sf)
+library(tmap)
+library(tidyverse)
+```
+
+## **Importing Data into R**
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", 
+                layer = "MP14_SUBZONE_WEB_PL")
+```
+
+```{r}
+mpsz
+```
+
+### **Importing Attribute Data into R**
+
+```{r}
+popdata <- read_csv("data/aspatial/listings.csv")
+```
+
+#### Data wrangling
+
+```{r}
+popdata2020 <- popdata %>%
+  filter(Time == 2020) %>%
+  group_by(PA, SZ, AG) %>%
+  summarise(`POP` = sum(`Pop`)) %>%
+  ungroup()%>%
+  pivot_wider(names_from=AG, 
+              values_from=POP) %>%
+  mutate(YOUNG = rowSums(.[3:6])
+         +rowSums(.[12])) %>%
+mutate(`ECONOMY ACTIVE` = rowSums(.[7:11])+
+rowSums(.[13:15]))%>%
+mutate(`AGED`=rowSums(.[16:21])) %>%
+mutate(`TOTAL`=rowSums(.[3:21])) %>%  
+mutate(`DEPENDENCY` = (`YOUNG` + `AGED`)
+/`ECONOMY ACTIVE`) %>%
+  select(`PA`, `SZ`, `YOUNG`, 
+       `ECONOMY ACTIVE`, `AGED`, 
+       `TOTAL`, `DEPENDENCY`)
+
+popdata2020 <- popdata2020 %>%
+  mutate_at(.vars = vars(PA, SZ), 
+          .funs = funs(toupper)) %>%
+  filter(`ECONOMY ACTIVE` > 0)
+
+mpsz_pop2020 <- left_join(mpsz, popdata2020,
+                          by = c("SUBZONE_N" = "SZ"))
+
+write_rds(mpsz_pop2020, "data/rds/mpszpop2020.rds")
+```
+
+#### Joining the attribute data and geospatial data
+
+```{r}
+tmap_mode("plot")
+qtm(mpsz_pop2020, 
+    fill = "DEPENDENCY")
 ```
