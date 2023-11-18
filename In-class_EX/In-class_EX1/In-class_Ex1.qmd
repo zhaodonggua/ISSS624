@@ -24,7 +24,7 @@ library(tidyverse)
 Firstly we will import the *Passenger Volumne by origin Destination Bus Stops*
 
 ```{r}
-odbus <- read_csv("data/aspatial/original_destination_bus_202308.csv")
+odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
 ```
 
 ```{r}
@@ -41,4 +41,14 @@ origtrip_7_9 <- odbus %>%
          TIME_PER_HOUR <=9 ) %>%
   group_by(ORIGIN_PT_CODE) %>%
   summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+busstop <-st_read(dsn="data/geospatial",layer = "BusStop") %>%
+  st_transform(crs=3414)
+```
+
+```{r}
+mpsz <- st_read(dsn="data/geospatial",layer="MPSZ-2019") %>%
+  st_transform(crs=3414)
 ```

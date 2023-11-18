@@ -84,24 +84,24 @@
     "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "ISSS624",
-    "section": "",
-    "text": "This is a Quarto website.\nwelcome to ISSS624 Geospatial Analytics\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
-  },
-  {
     "objectID": "In-class_EX/In-class_EX1/In-class_Ex1.html",
     "href": "In-class_EX/In-class_EX1/In-class_Ex1.html",
     "title": "In_class_Ex1.qmd",
     "section": "",
-    "text": "Thge code chunk below load the following packages:\n\ntmap: for thematic mapping\nsf: for geospatial data handling.\ntidyverse: for non-spatial handling.\n\n\npacman::p_load(tmap,sf,tidyverse)\nlibrary(tmap)\nlibrary(sf)\nlibrary(tidyverse)"
+    "text": "Thge code chunk below load the following packages:\n\ntmap: for thematic mapping\nsf: for geospatial data handling.\ntidyverse: for non-spatial handling.\n\n\npacman::p_load(tmap,sf,tidyverse)\nlibrary(tmap)\nlibrary(sf)\nlibrary(tidyverse)\n\n\n\nFirstly we will import the Passenger Volumne by origin Destination Bus Stops\n\nodbus &lt;- read_csv(\"data/aspatial/origin_destination_bus_202308.csv\")\n\nRows: 5709512 Columns: 7\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\nchr (5): YEAR_MONTH, DAY_TYPE, PT_TYPE, ORIGIN_PT_CODE, DESTINATION_PT_CODE\ndbl (2): TIME_PER_HOUR, TOTAL_TRIPS\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.\n\n\n\nodbus$ORIGIN_PT_CODE &lt;-\nas.factor(odbus$ORIGIN_PT_CODE)\nodbus$DESTINATION_PT_CODE &lt;-\nas.factor(odbus$DESTINATION_PT_CODE)\n\n\norigtrip_7_9 &lt;- odbus %&gt;%\n  filter(DAY_TYPE == \"WEEKDAY\") %&gt;%\n  filter(TIME_PER_HOUR &gt;=7 &\n         TIME_PER_HOUR &lt;=9 ) %&gt;%\n  group_by(ORIGIN_PT_CODE) %&gt;%\n  summarise(TRIPS = sum(TOTAL_TRIPS))\n\n\nbusstop &lt;-st_read(dsn=\"data/geospatial\",layer = \"BusStop\") %&gt;%\n  st_transform(crs=3414)\n\nReading layer `BusStop' from data source \n  `D:\\zzc\\ISSS624\\In-class_EX\\In-class_EX1\\data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 5161 features and 3 fields\nGeometry type: POINT\nDimension:     XY\nBounding box:  xmin: 3970.122 ymin: 26482.1 xmax: 48284.56 ymax: 52983.82\nProjected CRS: SVY21\n\n\n\nmpsz &lt;- st_read(dsn=\"data/geospatial\",layer=\"MPSZ-2019\") %&gt;%\n  st_transform(crs=3414)\n\nReading layer `MPSZ-2019' from data source \n  `D:\\zzc\\ISSS624\\In-class_EX\\In-class_EX1\\data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 332 features and 6 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775\nGeodetic CRS:  WGS 84"
   },
   {
     "objectID": "In-class_EX/In-class_EX1/In-class_Ex1.html#getting-started",
     "href": "In-class_EX/In-class_EX1/In-class_Ex1.html#getting-started",
     "title": "In_class_Ex1.qmd",
     "section": "",
-    "text": "Thge code chunk below load the following packages:\n\ntmap: for thematic mapping\nsf: for geospatial data handling.\ntidyverse: for non-spatial handling.\n\n\npacman::p_load(tmap,sf,tidyverse)\nlibrary(tmap)\nlibrary(sf)\nlibrary(tidyverse)"
+    "text": "Thge code chunk below load the following packages:\n\ntmap: for thematic mapping\nsf: for geospatial data handling.\ntidyverse: for non-spatial handling.\n\n\npacman::p_load(tmap,sf,tidyverse)\nlibrary(tmap)\nlibrary(sf)\nlibrary(tidyverse)\n\n\n\nFirstly we will import the Passenger Volumne by origin Destination Bus Stops\n\nodbus &lt;- read_csv(\"data/aspatial/origin_destination_bus_202308.csv\")\n\nRows: 5709512 Columns: 7\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\nchr (5): YEAR_MONTH, DAY_TYPE, PT_TYPE, ORIGIN_PT_CODE, DESTINATION_PT_CODE\ndbl (2): TIME_PER_HOUR, TOTAL_TRIPS\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.\n\n\n\nodbus$ORIGIN_PT_CODE &lt;-\nas.factor(odbus$ORIGIN_PT_CODE)\nodbus$DESTINATION_PT_CODE &lt;-\nas.factor(odbus$DESTINATION_PT_CODE)\n\n\norigtrip_7_9 &lt;- odbus %&gt;%\n  filter(DAY_TYPE == \"WEEKDAY\") %&gt;%\n  filter(TIME_PER_HOUR &gt;=7 &\n         TIME_PER_HOUR &lt;=9 ) %&gt;%\n  group_by(ORIGIN_PT_CODE) %&gt;%\n  summarise(TRIPS = sum(TOTAL_TRIPS))\n\n\nbusstop &lt;-st_read(dsn=\"data/geospatial\",layer = \"BusStop\") %&gt;%\n  st_transform(crs=3414)\n\nReading layer `BusStop' from data source \n  `D:\\zzc\\ISSS624\\In-class_EX\\In-class_EX1\\data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 5161 features and 3 fields\nGeometry type: POINT\nDimension:     XY\nBounding box:  xmin: 3970.122 ymin: 26482.1 xmax: 48284.56 ymax: 52983.82\nProjected CRS: SVY21\n\n\n\nmpsz &lt;- st_read(dsn=\"data/geospatial\",layer=\"MPSZ-2019\") %&gt;%\n  st_transform(crs=3414)\n\nReading layer `MPSZ-2019' from data source \n  `D:\\zzc\\ISSS624\\In-class_EX\\In-class_EX1\\data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 332 features and 6 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775\nGeodetic CRS:  WGS 84"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ISSS624",
+    "section": "",
+    "text": "This is a Quarto website.\nwelcome to ISSS624 Geospatial Analytics\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
   }
 ]
