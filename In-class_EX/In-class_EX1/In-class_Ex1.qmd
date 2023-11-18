@@ -1,0 +1,44 @@
+---
+title: "In_class_Ex1.qmd"
+---
+
+## Getting Started
+
+Thge code chunk below load the following packages:
+
+-   tmap: for thematic mapping
+
+-   sf: for geospatial data handling.
+
+-   tidyverse: for non-spatial handling.
+
+```{r}
+pacman::p_load(tmap,sf,tidyverse)
+library(tmap)
+library(sf)
+library(tidyverse)
+```
+
+### Importing the OD data
+
+Firstly we will import the *Passenger Volumne by origin Destination Bus Stops*
+
+```{r}
+odbus <- read_csv("data/aspatial/original_destination_bus_202308.csv")
+```
+
+```{r}
+odbus$ORIGIN_PT_CODE <-
+as.factor(odbus$ORIGIN_PT_CODE)
+odbus$DESTINATION_PT_CODE <-
+as.factor(odbus$DESTINATION_PT_CODE)
+```
+
+```{r}
+origtrip_7_9 <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >=7 &
+         TIME_PER_HOUR <=9 ) %>%
+  group_by(ORIGIN_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```

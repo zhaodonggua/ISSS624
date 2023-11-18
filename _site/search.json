@@ -89,5 +89,19 @@
     "title": "ISSS624",
     "section": "",
     "text": "This is a Quarto website.\nwelcome to ISSS624 Geospatial Analytics\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "In-class_EX/In-class_EX1/In-class_Ex1.html",
+    "href": "In-class_EX/In-class_EX1/In-class_Ex1.html",
+    "title": "In_class_Ex1.qmd",
+    "section": "",
+    "text": "Thge code chunk below load the following packages:\n\ntmap: for thematic mapping\nsf: for geospatial data handling.\ntidyverse: for non-spatial handling.\n\n\npacman::p_load(tmap,sf,tidyverse)\nlibrary(tmap)\nlibrary(sf)\nlibrary(tidyverse)"
+  },
+  {
+    "objectID": "In-class_EX/In-class_EX1/In-class_Ex1.html#getting-started",
+    "href": "In-class_EX/In-class_EX1/In-class_Ex1.html#getting-started",
+    "title": "In_class_Ex1.qmd",
+    "section": "",
+    "text": "Thge code chunk below load the following packages:\n\ntmap: for thematic mapping\nsf: for geospatial data handling.\ntidyverse: for non-spatial handling.\n\n\npacman::p_load(tmap,sf,tidyverse)\nlibrary(tmap)\nlibrary(sf)\nlibrary(tidyverse)"
   }
 ]
