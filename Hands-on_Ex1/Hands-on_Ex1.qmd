@@ -238,7 +238,7 @@ qtm(mpsz_pop2020,
     fill = "DEPENDENCY")
 ```
 
-### **Creating a choropleth map by using *tmap*\'s elements**
+### **Creating a choropleth map by using *tmap*'s elements**
 
 ```{r}
 tm_shape(mpsz_pop2020)+
