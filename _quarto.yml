@@ -11,10 +11,20 @@ website:
             href: Hands-on_Ex1/Hands-on_Ex1.html
           - text: Hands-on Exercise 2
             href: Hands-on_Ex2/Hands-on_Ex2.html
+            
       - text: In-class Exercise
         menu: 
           - text: In-class Exercise 1
             href: In-class_Ex/In-class_Ex1/In-class_Ex1.html
+          - text: In-class Exercise 2
+            href: In-class_Ex/In-class_Ex2/In-class_Ex02.html
+          - text: In-class Exercise 2-EHSA
+            href: In-class_Ex/In-class_Ex2/In-class_Ex02EHSA.html
+          - text: In-class Exercise 2-GLSA
+            href: In-class_Ex/In-class_Ex2/In-class_Ex02GLSA.html
+            
+
+            
       
     right:
       - href: index.html

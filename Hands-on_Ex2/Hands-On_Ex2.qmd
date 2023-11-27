@@ -384,9 +384,9 @@ rswm_q <- nb2listw(wm_q,
 rswm_q
 ```
 
-### **9.4.3 Global Spatial Autocorrelation: Moran\'s I**
+### **9.4.3 Global Spatial Autocorrelation: Moran's I**
 
-### **9.4.4 Maron\'s I test**
+### **9.4.4 Maron's I test**
 
 ```{r}
 moran.test(hunan$GDPPC, 
@@ -395,7 +395,7 @@ moran.test(hunan$GDPPC,
            na.action=na.omit)
 ```
 
-#### 9.4.4.1 Computing Monte Carlo Moran\'s I
+#### 9.4.4.1 Computing Monte Carlo Moran's I
 
 ```{r}
 set.seed(1234)
@@ -407,7 +407,7 @@ bperm= moran.mc(hunan$GDPPC,
 bperm
 ```
 
-#### 9.4.4.2 Visualising Monte Carlo Moran\'s I
+#### 9.4.4.2 Visualising Monte Carlo Moran's I
 
 ```{r}
 mean(bperm$res[1:999])
@@ -430,15 +430,15 @@ abline(v=0,
        col="red") 
 ```
 
-### **9.4.5 Global Spatial Autocorrelation: Geary\'s**
+### **9.4.5 Global Spatial Autocorrelation: Geary's**
 
-#### 9.4.5.1 Geary\'s C test
+#### 9.4.5.1 Geary's C test
 
 ```{r}
 geary.test(hunan$GDPPC, listw=rswm_q)
 ```
 
-#### 9.4.5.2 Computing Monte Carlo Geary\'s C
+#### 9.4.5.2 Computing Monte Carlo Geary's C
 
 ```{r}
 set.seed(1234)
@@ -448,7 +448,7 @@ bperm=geary.mc(hunan$GDPPC,
 bperm
 ```
 
-#### 9.4.5.3 Visualising the Monte Carlo Geary\'s C
+#### 9.4.5.3 Visualising the Monte Carlo Geary's C
 
 ```{r}
 mean(bperm$res[1:999])
@@ -460,7 +460,7 @@ abline(v=1, col="red")
 
 ## **9.5 Spatial Correlogram**
 
-### **9.5.1 Compute Moran\'s I correlogram**
+### **9.5.1 Compute Moran's I correlogram**
 
 ```{r}
 MI_corr <- sp.correlogram(wm_q, 
@@ -475,7 +475,7 @@ plot(MI_corr)
 print(MI_corr)
 ```
 
-### **9.5.2 Compute Geary\'s C correlogram and plot**
+### **9.5.2 Compute Geary's C correlogram and plot**
 
 ```{r}
 GC_corr <- sp.correlogram(wm_q, 
@@ -560,9 +560,9 @@ rswm_q <- nb2listw(wm_q,
 rswm_q
 ```
 
-### **10.4.3 Global Spatial Autocorrelation: Moran\'s I**
+### **10.4.3 Global Spatial Autocorrelation: Moran's I**
 
-### **10.4.4 Maron\'s I test**
+### **10.4.4 Maron's I test**
 
 ```{r}
 moran.test(hunan$GDPPC, 
@@ -571,7 +571,7 @@ moran.test(hunan$GDPPC,
            na.action=na.omit)
 ```
 
-#### 10.4.4.1 Computing Monte Carlo Moran\'s I
+#### 10.4.4.1 Computing Monte Carlo Moran's I
 
 ```{r}
 set.seed(1234)
@@ -583,7 +583,7 @@ bperm= moran.mc(hunan$GDPPC,
 bperm
 ```
 
-#### 10.4.4.2 Visualising Monte Carlo Moran\'s I
+#### 10.4.4.2 Visualising Monte Carlo Moran's I
 
 ```{r}
 mean(bperm$res[1:999])
@@ -598,13 +598,13 @@ abline(v=0,
 
 ```
 
-### **10.4.5 Global Spatial Autocorrelation: Geary\'s**
+### **10.4.5 Global Spatial Autocorrelation: Geary's**
 
 ```{r}
 geary.test(hunan$GDPPC, listw=rswm_q)
 ```
 
-#### 10.4.5.2 Computing Monte Carlo Geary\'s C
+#### 10.4.5.2 Computing Monte Carlo Geary's C
 
 ```{r}
 set.seed(1234)
@@ -614,7 +614,7 @@ bperm=geary.mc(hunan$GDPPC,
 bperm
 ```
 
-#### 10.4.5.3 Visualising the Monte Carlo Geary\'s C
+#### 10.4.5.3 Visualising the Monte Carlo Geary's C
 
 ```{r}
 mean(bperm$res[1:999])
@@ -626,7 +626,7 @@ abline(v=1, col="red")
 
 ## **10.5 Spatial Correlogram**
 
-### **10.5.1 Compute Moran\'s I correlogram**
+### **10.5.1 Compute Moran's I correlogram**
 
 ```{r}
 MI_corr <- sp.correlogram(wm_q, 
@@ -641,7 +641,7 @@ plot(MI_corr)
 print(MI_corr)
 ```
 
-### **10.5.2 Compute Geary\'s C correlogram and plot**
+### **10.5.2 Compute Geary's C correlogram and plot**
 
 ```{r}
 GC_corr <- sp.correlogram(wm_q, 
@@ -658,7 +658,7 @@ print(GC_corr)
 
 ## **10.6 Cluster and Outlier Analysis**
 
-### **10.6.1 Computing local Moran\'s I**
+### **10.6.1 Computing local Moran's I**
 
 ```{r}
 fips <- order(hunan$County)
@@ -673,14 +673,14 @@ printCoefmat(data.frame(
   check.names=FALSE)
 ```
 
-#### 10.6.1.1 Mapping the local Moran\'s I
+#### 10.6.1.1 Mapping the local Moran's I
 
 ```{r}
 hunan.localMI <- cbind(hunan,localMI) %>%
   rename(Pr.Ii = Pr.z....E.Ii..)
 ```
 
-#### 10.6.1.2 Mapping local Moran\'s I values
+#### 10.6.1.2 Mapping local Moran's I values
 
 ```{r}
 tm_shape(hunan.localMI) +
@@ -691,7 +691,7 @@ tm_shape(hunan.localMI) +
   tm_borders(alpha = 0.5)
 ```
 
-#### 10.6.1.3 Mapping local Moran\'s I p-values
+#### 10.6.1.3 Mapping local Moran's I p-values
 
 ```{r}
 tm_shape(hunan.localMI) +
@@ -702,7 +702,7 @@ tm_shape(hunan.localMI) +
   tm_borders(alpha = 0.5)
 ```
 
-#### 10.6.1.4 Mapping both local Moran\'s I values and p-values
+#### 10.6.1.4 Mapping both local Moran's I values and p-values
 
 ```{r}
 localMI.map <- tm_shape(hunan.localMI) +
@@ -808,7 +808,7 @@ tmap_arrange(gdppc, LISAmap,
 
 ## **10.8 Hot Spot and Cold Spot Area Analysis**
 
-### **10.8.1 Getis and Ord\'s G-Statistics**
+### **10.8.1 Getis and Ord's G-Statistics**
 
 #### 10.8.2.1 Deriving the centroid
 
