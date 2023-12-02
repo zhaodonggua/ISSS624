@@ -1,3 +1,329 @@
 ---
 title: "Take-Home-EX01"
 ---
+
+# Getting Started
+
+## Loading R packages
+
+```{r}
+pacman::p_load(tmap, sf, tidyverse, knitr,dplyr,mapview)
+```
+
+## Imorting Data
+
+### Importing geospatial data
+we will import BusStop and save as sf data frame called busstop.
+
+```{r}
+busstop <- st_read(dsn = "data/geospatial", layer = "BusStop")
+```
+
+### Importing OD data
+We will import Passenger Volumn data by using st_read() 
+
+```{r}
+odbus = st_read("data/Apstial/origin_destination_bus_202308.csv")
+```
+
+We will convert some data type to factor and numeric.
+
+```{r}
+odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
+odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE) 
+odbus$TOTAL_TRIPS <- as.numeric(odbus$TOTAL_TRIPS)
+```
+
+## Extracting the data
+
+### Weekday morning peak
+we will extract commuting flows during the weekday morning peak
+
+```{r}
+odbus6_9 <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 6 &
+           TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+### Weekday afternoon peak
+we will extract commuting flows during the weekday afternoon peak
+
+```{r}
+odbus17_20 <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 17 &
+           TIME_PER_HOUR <= 20) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+### Weekend/holiday morning peak
+we will extract commuting flows during the weekend/holiday morning peak
+
+```{r}
+odbus11_14 <- odbus %>%
+  filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
+  filter(TIME_PER_HOUR >= 11 &
+           TIME_PER_HOUR <= 14) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+### Weekend/holiday evening peak
+we will extract commuting flows during the weekend/holiday evening peak
+
+```{r}
+odbus16_19 <- odbus %>%
+  filter(DAY_TYPE == "WEEKENDS/HOLIDAY") %>%
+  filter(TIME_PER_HOUR >= 16 &
+           TIME_PER_HOUR <= 19) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+## Create Hexagon grid
+
+Use busstop to Make a hexagonal grid, set distance as 250m.  
+```{r}
+area_honeycomb_grid = st_make_grid(busstop, cellsize = 500, what = "polygons", square = FALSE)
+
+# To sf and add grid ID
+honeycomb_grid_sf = st_sf(area_honeycomb_grid) %>%
+  # add grid ID
+  mutate(grid_id = 1:length(lengths(area_honeycomb_grid)))
+
+```
+
+## Geospatial data wrangling
+
+### Combining Busstop and Hexagon grid
+
+Combine busstop and hexagon data set by US_STOP_N and grid_id.
+```{r}
+busstop_hexagon <- st_intersection(busstop, honeycomb_grid_sf) %>%
+  select(BUS_STOP_N, grid_id) %>%
+  st_drop_geometry()
+```
+
+```{r}
+write_rds(busstop_hexagon, "data/rds/busstop_hexagon.csv")  
+```
+
+### Left join weekday morning peak
+
+Now we will left join the weekday morning peak and combined hexagon grid.
+```{r}
+od_data1 <- left_join(odbus6_9 , busstop_hexagon,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_SZ = grid_id) %>%
+  group_by(ORIGIN_BS,ORIGIN_SZ) %>%
+  summarise(TOT_TRIPS = sum(TRIPS))
+```
+
+### Left join weekday afternoon peak
+
+Now we will left join the weekday afternoon peak and combined hexagon grid.
+```{r}
+od_data2 <- left_join(odbus17_20 , busstop_hexagon,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_SZ = grid_id) %>%
+  group_by(ORIGIN_BS,ORIGIN_SZ) %>%
+  summarise(TOT_TRIPS = sum(TRIPS))
+```
+
+### Left join weekend/holiday morning peak
+
+Now we will left join the weekend/holiday morning peak and combined hexagon grid.
+```{r}
+od_data3 <- left_join(odbus11_14 , busstop_hexagon,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_SZ = grid_id) %>%
+  group_by(ORIGIN_BS,ORIGIN_SZ) %>%
+  summarise(TOT_TRIPS = sum(TRIPS))
+```
+
+### Left join weekend/holiday evening peak
+Now we will left join the weekend/holiday afternoon peak and combined hexagon grid.
+```{r}
+od_data4 <- left_join(odbus16_19 , busstop_hexagon,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_SZ = grid_id) %>%
+  group_by(ORIGIN_BS,ORIGIN_SZ) %>%
+  summarise(TOT_TRIPS = sum(TRIPS))
+```
+
+### Checking duplicate records
+
+Check for duplicating records
+```{r}
+duplicate1 <- od_data1 %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+
+duplicate2 <- od_data2 %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+
+duplicate3 <- od_data3 %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+
+duplicate4 <- od_data4 %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+```
+
+### Retain unique records
+Use code chunk below will be used to retain the unique records.
+```{r}
+od_data1 <- unique(od_data1)
+od_data2 <- unique(od_data2)
+od_data3 <- unique(od_data3)
+od_data4 <- unique(od_data4)
+```
+
+### Update od_data data frame with the grid id
+
+Confirm if the duplicating records issue has been addressed fully.
+```{r}
+origintrip1 <- left_join(honeycomb_grid_sf, 
+                           od_data1,
+                           by = c("grid_id" = "ORIGIN_SZ"))
+```
+
+```{r}
+origintrip2 <- left_join(honeycomb_grid_sf, 
+                           od_data2,
+                           by = c("grid_id" = "ORIGIN_SZ"))
+```
+
+```{r}
+origintrip3 <- left_join(honeycomb_grid_sf, 
+                           od_data3,
+                           by = c("grid_id" = "ORIGIN_SZ"))
+```
+
+```{r}
+origintrip4 <- left_join(honeycomb_grid_sf, 
+                           od_data4,
+                           by = c("grid_id" = "ORIGIN_SZ"))
+```
+
+### Remove grid without value of 0
+Filter out the records which TOT_TRIPS is NA.
+```{r}
+origintrip1 = filter(origintrip1, TOT_TRIPS > 0)
+origintrip2 = filter(origintrip2, TOT_TRIPS > 0)
+origintrip3 = filter(origintrip3, TOT_TRIPS > 0)
+origintrip4 = filter(origintrip4, TOT_TRIPS > 0)
+```
+
+## Creating Interactive map
+
+Use 4 datasets to create interactive map.
+::: panel-tabset
+### Weekday morning peak
+
+```{r}
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+tm_shape(origintrip1)+
+  tm_fill("TOT_TRIPS", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Passenger trips") +
+  tm_layout(main.title = "Passenger trips generated at planning sub-zone level",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2) 
+```
+
+### weekday afternoon peak
+
+```{r}
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+tm_shape(origintrip2)+
+  tm_fill("TOT_TRIPS", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Passenger trips") +
+  tm_layout(main.title = "Passenger trips generated at planning sub-zone level",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+```
+
+### weekend/holiday morning peak
+
+```{r}
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+tm_shape(origintrip3)+
+  tm_fill("TOT_TRIPS", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Passenger trips") +
+  tm_layout(main.title = "Passenger trips generated at planning sub-zone level",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+```
+
+
+### Weekend/holiday evening peak	
+```{r}
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+tm_shape(origintrip4)+
+  tm_fill("TOT_TRIPS", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Passenger trips") +
+  tm_layout(main.title = "Passenger trips generated at planning sub-zone level",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+```
+:::
+
+

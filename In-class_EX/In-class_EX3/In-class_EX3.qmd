@@ -1,0 +1,23 @@
+---
+title: "In-class_EX3"
+---
+
+# **Calibrating Spatial Interaction Models with R**
+
+## **Overview**
+
+## **The Case Study and Data**
+
+## **Getting Started**
+
+-   sf for importing, integrating, processing and transforming geospatial data.
+
+-   tidyverse for importing, integrating, wrangling and visualising data.
+
+-   tmap for creating thematic maps.
+
+```{r}
+pacman::p_load(tmap, sf, sp, DT, stplanr,
+               performance, reshape2,
+               ggpubr, units, tidyverse)
+```
