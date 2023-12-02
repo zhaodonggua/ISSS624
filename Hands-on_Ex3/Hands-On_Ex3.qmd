@@ -89,6 +89,10 @@ mpsz <- st_read(dsn = "data/geospatial",
 mpsz
 ```
 
+```{r}
+mpsz <- write_rds(mpsz, "data/rds/mpsz.rds")
+```
+
 ## **15.5 Geospatial data wrangling**
 
 ### **15.5.1 Combining Busstop and mpsz**
