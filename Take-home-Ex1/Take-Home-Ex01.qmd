@@ -346,8 +346,6 @@ tm_shape(origintrip4)+
 ```
 :::
 
-statistical conclusions
-
 ### Weekday Morning vs. Afternoon Peak
 
 The center and southern regions of the island appear to have a higher concentration of trips during the morning peak hours, implying that more individuals commute to these locations in the morning for work or education. While the afternoon map still shows high density in these places, the distribution is more even, indicating that people are dispersing to different sections of the island, possibly returning home or heading to other sites after work or school. The distribution of hexagons in the morning peak looks to be slightly more concentrated towards the center, whereas the spread in the afternoon appears to be wider, indicating that journeys in the afternoon originate from a more diversified range of locales.
@@ -633,4 +631,8 @@ tmap_arrange(map1, map2, ncol = 2)
 ```
 :::
 
-##statistical conclusions
+## statistical conclusions
+
+During weekday peak,High-High clustering is stronger, especially in the morning when people are travelling to work or school. This suggests that people are uniformly travelling by transport, which leads to clustering.
+
+During weekends/holidays peak, clusters may be less pronounced or change, reflecting a variety of travel patterns such as leisure or shopping trips. People tend to travel around the various regions of Singapore rather than just clustering in certain areas.
