@@ -633,6 +633,10 @@ tmap_arrange(map1, map2, ncol = 2)
 
 ## statistical conclusions
 
-During weekday peak,High-High clustering is stronger, especially in the morning when people are travelling to work or school. This suggests that people are uniformly travelling by transport, which leads to clustering.
+During weekday morning peak,there is a high traffic density in certain places based on high-high clustering. A few high and low outliers are also present, which would mean that some high traffic locations are close to areas with generally lower traffic.
 
-During weekends/holidays peak, clusters may be less pronounced or change, reflecting a variety of travel patterns such as leisure or shopping trips. People tend to travel around the various regions of Singapore rather than just clustering in certain area.
+During weekday afternoon peak:Traffic may be beginning to spread out from the high density areas in the morning, according to the decrease in high and high clustering in some area.
+
+During weekends/holidays morning peak, Weekend morning traffic may be more equally spread than weekday traffic, as evidenced by the decrease in high and high clustering in the CBD when compared to the weekday morning peak.
+
+During weekends/holiday evening peak:High-high clustering is more dispersed throughout the city.
