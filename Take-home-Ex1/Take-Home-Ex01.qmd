@@ -344,14 +344,11 @@ tm_shape(origintrip4)+
   tm_grid(alpha =0.2)
 ```
 
-::: 
-## statistical conclusions
-### Weekday Morning vs. Afternoon Peak 
-The center and southern regions of the island appear to have a higher concentration of trips during the morning peak hours, implying that more individuals commute to these locations in the morning for work or education. While the afternoon map still shows high density in these places, the distribution is more even, indicating that people are dispersing to different sections of the island, possibly returning home or heading to other sites after work or school. The distribution of hexagons in the morning peak looks to be slightly more concentrated towards the center, whereas the spread in the afternoon appears to be wider, indicating that journeys in the afternoon originate from a more diversified range of locales.
+::: \## statistical conclusions \### Weekday Morning vs. Afternoon Peak The center and southern regions of the island appear to have a higher concentration of trips during the morning peak hours, implying that more individuals commute to these locations in the morning for work or education. While the afternoon map still shows high density in these places, the distribution is more even, indicating that people are dispersing to different sections of the island, possibly returning home or heading to other sites after work or school. The distribution of hexagons in the morning peak looks to be slightly more concentrated towards the center, whereas the spread in the afternoon appears to be wider, indicating that journeys in the afternoon originate from a more diversified range of locales.
 
-### Weekend/Holiday Morning vs. Afternoon Peak
+### Weekend/Holiday Morning vs. evening Peak
 
-The downtown region has a distinct centralization of passenger trips. This center zone is most likely a major commercial or leisure sector that draws people even on weekends and holidays. The geographic distribution appears less concentrated on weekends/holidays than on weekdays, with more activity in outskirts and residential regions, indicating the non-work nature of travels.
+The morning peak looks to have a higher intensity of travels in the center area, whereas the evening peak has a more dispersed pattern, with higher trip counts in numerous periphery places. This could be due to individuals coming into the city for various morning events and then dispersing to other places in the evening. The downtown region has a distinct centralization of passenger trips. This center zone is most likely a major commercial or leisure sector that draws people even on weekends and holidays. The geographic distribution appears less concentrated on weekends/holidays than on weekdays, with more activity in outskirts and residential regions, indicating the non-work nature of travels.The nighttime map shows that there is a substantial amount of travel inside the central region, which could be attributed to dining, entertainment, and nightlife, which are common evening activities on weekends and holidays.
 
 # Getting Started - Local Indicators of Spatial Association (LISA) Analysis
 
@@ -629,3 +626,5 @@ tmap_arrange(map1, map2, ncol = 2)
 
 ```
 :::
+
+##statistical conclusions
