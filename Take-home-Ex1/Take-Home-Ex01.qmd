@@ -2,17 +2,18 @@
 title: "Take-Home-EX01"
 ---
 
-# Getting Started
+# Getting Started - Geovisualisation and Analysis
 
 ## Loading R packages
 
 ```{r}
-pacman::p_load(tmap, sf, tidyverse, knitr,dplyr,mapview)
+pacman::p_load(tmap, sf, tidyverse, knitr,dplyr,mapview,viridis)
 ```
 
 ## Imorting Data
 
 ### Importing geospatial data
+
 we will import BusStop and save as sf data frame called busstop.
 
 ```{r}
@@ -20,7 +21,8 @@ busstop <- st_read(dsn = "data/geospatial", layer = "BusStop")
 ```
 
 ### Importing OD data
-We will import Passenger Volumn data by using st_read() 
+
+We will import Passenger Volumn data by using st_read()
 
 ```{r}
 odbus = st_read("data/Apstial/origin_destination_bus_202308.csv")
@@ -37,6 +39,7 @@ odbus$TOTAL_TRIPS <- as.numeric(odbus$TOTAL_TRIPS)
 ## Extracting the data
 
 ### Weekday morning peak
+
 we will extract commuting flows during the weekday morning peak
 
 ```{r}
@@ -50,6 +53,7 @@ odbus6_9 <- odbus %>%
 ```
 
 ### Weekday afternoon peak
+
 we will extract commuting flows during the weekday afternoon peak
 
 ```{r}
@@ -63,6 +67,7 @@ odbus17_20 <- odbus %>%
 ```
 
 ### Weekend/holiday morning peak
+
 we will extract commuting flows during the weekend/holiday morning peak
 
 ```{r}
@@ -76,6 +81,7 @@ odbus11_14 <- odbus %>%
 ```
 
 ### Weekend/holiday evening peak
+
 we will extract commuting flows during the weekend/holiday evening peak
 
 ```{r}
@@ -90,7 +96,8 @@ odbus16_19 <- odbus %>%
 
 ## Create Hexagon grid
 
-Use busstop to Make a hexagonal grid, set distance as 250m.  
+Use busstop to Make a hexagonal grid, set distance as 250m.
+
 ```{r}
 area_honeycomb_grid = st_make_grid(busstop, cellsize = 500, what = "polygons", square = FALSE)
 
@@ -106,6 +113,7 @@ honeycomb_grid_sf = st_sf(area_honeycomb_grid) %>%
 ### Combining Busstop and Hexagon grid
 
 Combine busstop and hexagon data set by US_STOP_N and grid_id.
+
 ```{r}
 busstop_hexagon <- st_intersection(busstop, honeycomb_grid_sf) %>%
   select(BUS_STOP_N, grid_id) %>%
@@ -119,6 +127,7 @@ write_rds(busstop_hexagon, "data/rds/busstop_hexagon.csv")
 ### Left join weekday morning peak
 
 Now we will left join the weekday morning peak and combined hexagon grid.
+
 ```{r}
 od_data1 <- left_join(odbus6_9 , busstop_hexagon,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
@@ -131,6 +140,7 @@ od_data1 <- left_join(odbus6_9 , busstop_hexagon,
 ### Left join weekday afternoon peak
 
 Now we will left join the weekday afternoon peak and combined hexagon grid.
+
 ```{r}
 od_data2 <- left_join(odbus17_20 , busstop_hexagon,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
@@ -143,6 +153,7 @@ od_data2 <- left_join(odbus17_20 , busstop_hexagon,
 ### Left join weekend/holiday morning peak
 
 Now we will left join the weekend/holiday morning peak and combined hexagon grid.
+
 ```{r}
 od_data3 <- left_join(odbus11_14 , busstop_hexagon,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
@@ -153,7 +164,9 @@ od_data3 <- left_join(odbus11_14 , busstop_hexagon,
 ```
 
 ### Left join weekend/holiday evening peak
+
 Now we will left join the weekend/holiday afternoon peak and combined hexagon grid.
+
 ```{r}
 od_data4 <- left_join(odbus16_19 , busstop_hexagon,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
@@ -166,6 +179,7 @@ od_data4 <- left_join(odbus16_19 , busstop_hexagon,
 ### Checking duplicate records
 
 Check for duplicating records
+
 ```{r}
 duplicate1 <- od_data1 %>%
   group_by_all() %>%
@@ -193,7 +207,9 @@ duplicate4 <- od_data4 %>%
 ```
 
 ### Retain unique records
+
 Use code chunk below will be used to retain the unique records.
+
 ```{r}
 od_data1 <- unique(od_data1)
 od_data2 <- unique(od_data2)
@@ -204,6 +220,7 @@ od_data4 <- unique(od_data4)
 ### Update od_data data frame with the grid id
 
 Confirm if the duplicating records issue has been addressed fully.
+
 ```{r}
 origintrip1 <- left_join(honeycomb_grid_sf, 
                            od_data1,
@@ -229,18 +246,20 @@ origintrip4 <- left_join(honeycomb_grid_sf,
 ```
 
 ### Remove grid without value of 0
+
 Filter out the records which TOT_TRIPS is NA.
+
 ```{r}
-origintrip1 = filter(origintrip1, TOT_TRIPS > 0)
-origintrip2 = filter(origintrip2, TOT_TRIPS > 0)
-origintrip3 = filter(origintrip3, TOT_TRIPS > 0)
-origintrip4 = filter(origintrip4, TOT_TRIPS > 0)
+origintrip1 = filter(origintrip1, TOT_TRIPS > 0, !(grid_id %in% c(1767, 2135)))
+origintrip2 = filter(origintrip2, TOT_TRIPS > 0, !(grid_id %in% c(7068, 8361,8485,1767, 2135)))
+origintrip3 = filter(origintrip3, TOT_TRIPS > 0, !(grid_id %in% c(7068, 8361,8485,1767, 2135)))
+origintrip4 = filter(origintrip4, TOT_TRIPS > 0, !(grid_id %in% c(7068, 8361,8485,1767, 2135)))
 ```
 
 ## Creating Interactive map
 
-Use 4 datasets to create interactive map.
-::: panel-tabset
+Use 4 datasets to create interactive map. ::: panel-tabset
+
 ### Weekday morning peak
 
 ```{r}
@@ -304,8 +323,8 @@ tm_shape(origintrip3)+
   tm_grid(alpha =0.2)
 ```
 
+### Weekend/holiday evening peak
 
-### Weekend/holiday evening peak	
 ```{r}
 tmap_mode("view")
 tmap_options(check.and.fix = TRUE)
@@ -324,6 +343,289 @@ tm_shape(origintrip4)+
   tm_scale_bar() +
   tm_grid(alpha =0.2)
 ```
+
+::: 
+## statistical conclusions
+### Weekday Morning vs. Afternoon Peak 
+The center and southern regions of the island appear to have a higher concentration of trips during the morning peak hours, implying that more individuals commute to these locations in the morning for work or education. While the afternoon map still shows high density in these places, the distribution is more even, indicating that people are dispersing to different sections of the island, possibly returning home or heading to other sites after work or school. The distribution of hexagons in the morning peak looks to be slightly more concentrated towards the center, whereas the spread in the afternoon appears to be wider, indicating that journeys in the afternoon originate from a more diversified range of locales.
+
+### Weekend/Holiday Morning vs. Afternoon Peak
+
+The downtown region has a distinct centralization of passenger trips. This center zone is most likely a major commercial or leisure sector that draws people even on weekends and holidays. The geographic distribution appears less concentrated on weekends/holidays than on weekdays, with more activity in outskirts and residential regions, indicating the non-work nature of travels.
+
+# Getting Started - Local Indicators of Spatial Association (LISA) Analysis
+
+## loading R packages
+
+```{r}
+pacman::p_load(sf, sfdep, tmap, plotly, tidyverse,zoo,Kendall)
+```
+
+### Calculate inverse distance weight
+
+Derive an inverse distance weights by using the code chunk below. each geometry with 8 nearest neighbors for the corresponding observation
+
+#### weekday morning peak
+
+```{r}
+
+wm_idw1 <- origintrip1 %>%
+  mutate(nb = st_knn(area_honeycomb_grid,k=8),
+         wts = st_inverse_distance(nb, area_honeycomb_grid,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+
+
+```
+
+### weekday afternoon peak
+
+```{r}
+
+wm_idw2 <- origintrip2 %>%
+  mutate(nb = st_knn(area_honeycomb_grid,k=8),
+         wts = st_inverse_distance(nb, area_honeycomb_grid,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+
+
+```
+
+### weekend/holiday morning peak
+
+```{r}
+
+wm_idw3 <- origintrip3 %>%
+  mutate(nb = st_knn(area_honeycomb_grid,k=8),
+         wts = st_inverse_distance(nb, area_honeycomb_grid,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+
+
+```
+
+### weekend/holiday evening peak
+
+```{r}
+
+wm_idw4 <- origintrip4 %>%
+  mutate(nb = st_knn(area_honeycomb_grid,k=8),
+         wts = st_inverse_distance(nb, area_honeycomb_grid,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+
+
+```
+
+## Computing local Moran's I
+
+Compute Local Moran's I of GDPPC at county level by using local_moran() of sfdep package.
+
+### weekday morning peak
+
+```{r}
+
+lisa1 <- wm_idw1 %>% 
+  mutate(local_moran = local_moran(
+    TOT_TRIPS, nb, wts, nsim = 99),
+         .before = 1) %>%
+  unnest(local_moran)
+
+```
+
+### weekday afternoon peak
+
+```{r}
+
+lisa2 <- wm_idw2 %>% 
+  mutate(local_moran = local_moran(
+    TOT_TRIPS, nb, wts, nsim = 99),
+         .before = 1) %>%
+  unnest(local_moran)
+
+```
+
+### weekend/holiday morning peak
+
+```{r}
+
+lisa3 <- wm_idw3 %>% 
+  mutate(local_moran = local_moran(
+    TOT_TRIPS, nb, wts, nsim = 99),
+         .before = 1) %>%
+  unnest(local_moran)
+
+```
+
+### weekend/holiday evening peak
+
+```{r}
+
+lisa4 <- wm_idw4 %>% 
+  mutate(local_moran = local_moran(
+    TOT_TRIPS, nb, wts, nsim = 99),
+         .before = 1) %>%
+  unnest(local_moran)
+
+```
+
+## Visualising local Moran's I and p-value
+
+It will be better for us to plot both maps next to each other as shown below.
+
+::: panel-tabset
+### weekday morning and afternoon peak
+
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(lisa1) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of weekday morning total trips",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa1) +
+  tm_fill("p_ii_sim",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+#weekday afternoon peak
+tmap_mode("plot")
+map3 <- tm_shape(lisa2) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of weekday afternoon total trips",
+            main.title.size = 0.8)
+
+map4 <- tm_shape(lisa2) +
+  tm_fill("p_ii_sim",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+tmap_arrange(map1, map2, map3 , map4 , ncol = 2)
+
+
+
+
+```
+
+### weekend/holiday morning and evening peak
+
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(lisa3) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of weekend/holiday morning tatal trips",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa3) +
+  tm_fill("p_ii_sim",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+#weekend/holiday  evening
+
+tmap_mode("plot")
+map1 <- tm_shape(lisa4) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of weekend/holiday evening total trips",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa4) +
+  tm_fill("p_ii_sim",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+
+tmap_arrange(map1, map2,map3,map4, ncol = 2)
+
+
+```
 :::
 
+## Visualising LISA map
 
+We can find three fields contain the LISA categories. They are mean, median and pysal. In general, classification in mean will be used as shown in the code chunk below
+
+::: panel-tabset
+### weekday morning and afternoon peak
+
+```{r}
+
+lisa_sig1 <- lisa1  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+map1 <- tm_shape(lisa1) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig1) +
+  tm_fill("mean") + 
+   tm_layout(main.title = "lisa map for weekday morning peak",
+            main.title.size = 0.8)+
+  tm_borders(alpha = 0.4)
+
+
+lisa_sig2 <- lisa2  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+map2 <- tm_shape(lisa2) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig2) +
+  tm_fill("mean") +    tm_layout(main.title = "lisa map for weekday afternoon peak",
+            main.title.size = 0.8)+
+  tm_borders(alpha = 0.4)
+
+tmap_arrange(map1, map2, ncol = 2)
+
+```
+
+### weekend/holiday morning and evening peak
+
+```{r}
+lisa_sig3 <- lisa3  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+map1 <- tm_shape(lisa3) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig3) +
+  tm_fill("mean") + 
+  tm_borders(alpha = 0.4)
+
+lisa_sig4 <- lisa4  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+map2<- tm_shape(lisa4) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig4) +
+  tm_fill("mean") + 
+  tm_borders(alpha = 0.4)
+
+tmap_arrange(map1, map2, ncol = 2)
+
+```
+:::
