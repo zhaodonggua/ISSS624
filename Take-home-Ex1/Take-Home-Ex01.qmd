@@ -635,4 +635,4 @@ tmap_arrange(map1, map2, ncol = 2)
 
 During weekday peak,High-High clustering is stronger, especially in the morning when people are travelling to work or school. This suggests that people are uniformly travelling by transport, which leads to clustering.
 
-During weekends/holidays peak, clusters may be less pronounced or change, reflecting a variety of travel patterns such as leisure or shopping trips. People tend to travel around the various regions of Singapore rather than just clustering in certain areas.
+During weekends/holidays peak, clusters may be less pronounced or change, reflecting a variety of travel patterns such as leisure or shopping trips. People tend to travel around the various regions of Singapore rather than just clustering in certain area.
