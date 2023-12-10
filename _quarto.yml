@@ -27,8 +27,10 @@ website:
             href: In-class_Ex/In-class_Ex2/In-class_Ex02GLSA.html
           - text: In-class Exercise 3
             href: In-class_Ex/In-class_Ex3/In-class_Ex3.html
-          - text: In-class Exercise 4
+          - text: In-class Exercise 4-GDS
             href: In-class_Ex/In-class_Ex4/In-class_Ex4.html
+          - text: In-class Exercise 4-SIMS
+            href: In-class_Ex/In-class_Ex4/In-class_Ex4SIMS.html
              
       - text: Take-Home Exercise
         menu: 

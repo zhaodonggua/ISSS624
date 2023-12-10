@@ -7,7 +7,7 @@ title: "In-class_EX4"
 #Getting Started
 ```{r}
 pacman::p_load(tidyverse, sf, httr,
-               tmap)
+               tmap,dplyr)
 
 ```
 
@@ -27,15 +27,14 @@ pacman::p_load(tidyverse, sf, httr,
 #not_found<-data.frame()
 
 #for(postcode in postcodes){
-#  query<-list('searchVal'=postcode,'returnGeom'='Y','getAddrDetails'='Y','pageNum'='1')
+#  query<-list('searchVal'=postcode,'returnGeom'='Y','getAddrDetails'='Y','pageNum'='1'#)
 #  res<- GET(url,query=query)
   
 #  if((content(res)$found)!=0){
-#    print(found)
 #    found<-rbind(found,data.frame(content(res))[4:13])
-#  } else{
+#    } else{
 #    not_found = data.frame(postcode)
- # }
+#  }
 #}
 
 
@@ -48,6 +47,7 @@ pacman::p_load(tidyverse, sf, httr,
 
 
 ```
+
  
 #Tidying schools data.frame
 you will import schools.csv into R environment and at the same time tidying the data by selecting only the necessary fields as well as rename some fields.
@@ -142,6 +142,17 @@ mpsz_tidy <- mpsz %>%
 
 
 ```
+```{r}
+
+# Inspect the structure of mpsz
+str(mpsz)
+
+
+
+```
+
+
+
 
 we will append SCHOOL_COUNT and BUSINESS_COUNT fields from mpsz_tidy data.frame into flow_data sf tibble data.frame by using the code chunk below.
 
@@ -163,14 +174,25 @@ summary(flow_data)
 
 ```
 In view of this, code chunk below will be used to replace zero values to 0.99.
+```{r}
+flow_data <- flow_data %>%
+select(everything()) %>% 
+  rename(SCHOOL_COUNT = SCHOOL_COUNT.y)  
+
+```
+
 
 ```{r}
-#flow_data$SCHOOL_COUNT <- ifelse(
-#  flow_data$SCHOOL_COUNT == 0,
-#  0.99, flow_data$SCHOOL_COUNT)
-#flow_data$BUSINESS_COUNT <- ifelse(
-#  flow_data$BUSINESS_COUNT == 0,
-#  0.99, flow_data$BUSINESS_COUNT)
+
+
+
+flow_data$SCHOOL_COUNT <- ifelse(
+  flow_data$SCHOOL_COUNT == 0,
+  0.99, flow_data$SCHOOL_COUNT)
+
+flow_data$BUSINESS_COUNT <- ifelse(
+  flow_data$BUSINESS_COUNT == 0,
+  0.99, flow_data$BUSINESS_COUNT)
 
 
 
@@ -180,7 +202,11 @@ In view of this, code chunk below will be used to replace zero values to 0.99.
 summary(flow_data)
 
 ```
+```{r}
+write_rds(flow_data,
+          "data/rds/flow_data_tidy.rds")
 
+```
 
 
 
