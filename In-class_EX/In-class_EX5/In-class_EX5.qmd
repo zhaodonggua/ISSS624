@@ -439,4 +439,89 @@ cor_image(cor_mat)
 # Model Calibration
 ## The base model
 
+```{r}
+base_model <- spflow(
+  spflow_formula = log(1 + TRIPS) ~ 
+    O_(BUSSTOP_COUNT +
+         AGE25_64) +
+    D_(SCHOOL_COUNT +
+    BUSINESS_COUNT +
+    RETAILS_COUNT +
+    FINSERV_COUNT) +
+    P_(log(DISTANCE + 1)),
+  spflow_networks = mpsz_multi_net)
 
+base_model
+```
+
+
+```{r}
+plot(base_model)
+```
+
+## Residual diagnostics
+In the code chunk below, spflow_moran_plots() is used.
+
+
+```{r}
+old_par <- par(mfrow = c(1, 3), 
+               mar = c(2,2,2,2))
+spflow_moran_plots(base_model)
+```
+pair_cor() can be used to inspect the relationship of the residual and the explanatory variables by using the code chunk below
+
+```{r}
+corr_residual <- pair_cor(base_model)
+colnames(corr_residual) <- substr(colnames(corr_residual),1,3)
+cor_image(corr_residual)
+```
+
+
+```{r}
+model.df <- as_tibble(base_model@spflow_indicators) %>%
+  mutate(FITTED_Y = round(exp(FITTED),0))
+```
+
+## Working with model control
+
+```{r}
+mpsz_flow1 <- mpsz_flow %>%
+  left_join(model.df) %>%
+  select(1:4,8) %>%
+  mutate(diff = (FITTED_Y-TRIPS))
+```
+
+
+```{r}
+spflow_formula <- log(1 + TRIPS) ~ 
+    O_(BUSSTOP_COUNT +
+         AGE25_64) +
+    D_(SCHOOL_COUNT +
+    BUSINESS_COUNT +
+    RETAILS_COUNT +
+    FINSERV_COUNT) +
+    P_(log(DISTANCE + 1))
+
+model_control <- spflow_control(
+  estimation_method = "mle",
+  model = "model_8")
+
+mle_model8 <- spflow(
+  spflow_formula,
+  spflow_networks = mpsz_multi_net,
+  estimation_control = model_control)
+
+mle_model8
+```
+
+
+```{r}
+old_par <- par(mfrow = c(1, 3), 
+               mar = c(2,2,2,2))
+spflow_moran_plots(mle_model8)
+```
+
+
+```{r}
+par(old_par)
+```
