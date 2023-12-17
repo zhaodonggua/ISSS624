@@ -5,11 +5,438 @@ title: "In-class_EX5"
 # Get Started
 
 ```{r}
-devtools::install_github("LukeCe/spflow")
+#devtools::install_github("LukeCe/spflow")
 ```
 
 ```{r}
 pacman::p_load(tmap,sf,spdep,sp,Matrix,spflow,reshape2,knitr,tidyverse)
 ```
 
-# 
+# Data Preparation
+
+## Building the geographical area
+MPSZ-2019 shapefile will be import into R environment as a sf tibble data.frame called mpsz.
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial",
+                layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414) 
+```
+
+the code chunk below will be used to import BusStop shapefile into R environment as an sf object called busstop.
+```{r}
+busstop <- st_read(dsn = "data/geospatial",
+                   layer = "BusStop") %>%
+  st_transform(crs = 3414)
+
+```
+
+our analysis will be focused on planning subzone with bus stop. In view of this, the code chunk below will be used to perform Point-in-Polygon count analysis.
+```{r}
+mpsz$`BUSSTOP_COUNT`<- lengths(
+  st_intersects(
+    mpsz, busstop))
+
+```
+
+```{r}
+
+
+mpsz_busstop <- mpsz %>%
+  filter(BUSSTOP_COUNT > 0)
+mpsz_busstop
+
+```
+
+## Preparing the Spatial Weights
+
+Code chunk below will be used to compute the three spatial weights at one goal.
+
+```{r}
+centroids <- suppressWarnings({
+    st_point_on_surface(st_geometry(mpsz_busstop))})
+
+mpsz_nb <- list(
+  "by_contiguity" = poly2nb(mpsz_busstop),
+  "by_distance" = dnearneigh(centroids, 
+                             d1 = 0, d2 = 5000),
+  "by_knn" = knn2nb(knearneigh(centroids, 3))
+)
+
+```
+Code chunks below will be used to plot the spatial weights in mpsz_nb.
+
+```{r}
+plot(st_geometry(mpsz))
+plot(mpsz_nb$by_contiguity, 
+     centroids, 
+     add = T, 
+     col = rgb(0,0,0,
+               alpha=0.5))
+title("Contiguity") 
+
+plot(st_geometry(mpsz))
+plot(mpsz_nb$by_distance,
+     centroids, 
+     add = T, 
+     col = rgb(0,0,0,
+               alpha=0.5)) 
+title("Distance") 
+
+plot(st_geometry(mpsz))
+plot(mpsz_nb$by_knn, 
+     centroids, 
+     add = T, 
+     col = rgb(0,0,0,
+               alpha=0.5))
+title("3 Nearest Neighbors") 
+
+```
+```{r}
+write_rds(mpsz_nb, "data/rds/mpsz_nb.rds")
+
+```
+
+## Preparing The Flow Data
+
+```{r}
+odbus6_9 <- read_rds("data/rds/odbus6_9.rds")
+```
+
+
+```{r}
+busstop_mpsz <- st_intersection(busstop, mpsz) %>%
+  select(BUS_STOP_N, SUBZONE_C) %>%
+  st_drop_geometry()
+```
+
+we are going to append the planning subzone code from busstop_mpsz data.frame onto odbus6_9 data frame.
+
+
+```{r}
+od_data <- left_join(odbus6_9 , busstop_mpsz,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_SZ = SUBZONE_C,
+         DESTIN_BS = DESTINATION_PT_CODE)
+```
+
+Before continue, it is a good practice for us to check for duplicating records.
+
+
+```{r}
+duplicate <- od_data %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+
+```{r}
+od_data <- unique(od_data)
+```
+
+
+```{r}
+od_data <- left_join(od_data , busstop_mpsz,
+            by = c("DESTIN_BS" = "BUS_STOP_N")) 
+```
+
+
+```{r}
+duplicate <- od_data %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+
+```{r}
+od_data <- unique(od_data)
+```
+
+
+```{r}
+od_data <- od_data %>%
+  rename(DESTIN_SZ = SUBZONE_C) %>%
+  drop_na() %>%
+  group_by(ORIGIN_SZ, DESTIN_SZ) %>%
+  summarise(TRIPS = sum(TRIPS))
+```
+
+The od_data data.frame should look similar the table below.
+```{r}
+kable(head(od_data, n = 5))
+```
+
+
+```{r}
+write_rds(od_data, "data/rds/od_data.rds")
+```
+
+## Computing Distance Matrix
+First as.Spatial() will be used to convert mpsz from sf tibble data frame to SpatialPolygonsDataFrame of sp object as shown in the code chunk below.
+
+
+```{r}
+mpsz_sp <- as(mpsz_busstop, "Spatial")
+mpsz_sp
+```
+
+## Computing the distance matrix
+Next, spDists() of sp package will be used to compute the Euclidean distance between the centroids of the planning subzones.
+```{r}
+DISTANCE <- spDists(mpsz_sp, 
+                    longlat = FALSE)
+```
+Labelling column and row heanders of a distance matrix
+
+```{r}
+head(DISTANCE, n=c(10, 10))
+```
+First, we will create a list sorted according to the the distance matrix by planning sub-zone code.
+
+
+```{r}
+sz_names <- mpsz_busstop$SUBZONE_C
+```
+Next we will attach SUBZONE_C to row and column for distance matrix matching ahead
+
+
+```{r}
+colnames(DISTANCE) <- paste0(sz_names)
+rownames(DISTANCE) <- paste0(sz_names)
+```
+
+Pivoting distance value by SUBZONE_C
+
+```{r}
+distPair <- melt(DISTANCE) %>%
+  rename(DISTANCE = value)
+head(distPair, 10)
+```
+
+```{r}
+distPair <- distPair %>%
+  rename(ORIGIN_SZ = Var1,
+         DESTIN_SZ = Var2)
+```
+
+
+```{r}
+flow_data <- distPair %>%
+  left_join (od_data) %>%
+  mutate(TRIPS = coalesce(TRIPS, 0))
+```
+
+
+```{r}
+kable(head(flow_data, n = 10))
+```
+
+```{r}
+write_rds(flow_data, "data/rds/mpsz_flow.rds")
+```
+
+## Preparing Explanatory Variables
+The code chunk below will be used to import pop.csv into R environment and save it as an tibble data.frame object called pop.
+```{r}
+pop <- read_csv("data/aspatial/pop.csv")
+```
+
+
+```{r}
+mpsz_var <- mpsz_busstop %>%
+  left_join(pop,
+            by = c("PLN_AREA_N" = "PA",
+                   "SUBZONE_N" = "SZ")) %>%
+  select(1:2, 7:11) %>%
+  rename(SZ_NAME = SUBZONE_N,
+         SZ_CODE = SUBZONE_C)
+```
+
+```{r}
+kable(head(mpsz_var[, 1:6], n = 6))
+```
+
+Deriving explanatory variables using Point-in-Polygon count
+
+```{r}
+schools <- read_rds("data/rds/schools.rds")
+```
+
+
+```{r}
+mpsz_var$`SCHOOL_COUNT`<- lengths(
+  st_intersects(
+    mpsz_var, schools))
+```
+
+
+
+```{r}
+business <- st_read(dsn = "data/geospatial",
+                    layer = "Business") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+retails <- st_read(dsn = "data/geospatial",
+                    layer = "Retails") %>%
+  st_transform(crs = 3414)
+```
+
+
+```{r}
+finserv <- st_read(dsn = "data/geospatial",
+                    layer = "FinServ") %>%
+  st_transform(crs = 3414)
+```
+
+
+```{r}
+entertn <- st_read(dsn = "data/geospatial",
+                    layer = "entertn") %>%
+  st_transform(crs = 3414)
+```
+
+
+```{r}
+fb <- st_read(dsn = "data/geospatial",
+                    layer = "F&B") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+lr <- st_read(dsn = "data/geospatial",
+                    layer = "Liesure&Recreation") %>%
+  st_transform(crs = 3414)
+```
+Then,we will perform Point-in-Polygon analysis for each of these sf object by using the code chunk below.
+
+
+
+```{r}
+mpsz_var$`BUSINESS_COUNT`<- lengths(
+  st_intersects(
+    mpsz_var, business))
+
+mpsz_var$`RETAILS_COUNT`<- lengths(
+  st_intersects(
+    mpsz_var, retails))
+
+mpsz_var$`FINSERV_COUNT`<- lengths(
+  st_intersects(
+    mpsz_var, finserv))
+
+mpsz_var$`ENTERTN_COUNT`<- lengths(
+  st_intersects(
+    mpsz_var, entertn))
+
+mpsz_var$`FB_COUNT`<- lengths(
+  st_intersects(
+    mpsz_var, fb))
+
+mpsz_var$`LR_COUNT`<- lengths(
+  st_intersects(
+    mpsz_var, lr))
+```
+
+
+```{r}
+glimpse(mpsz_var)
+
+```
+
+
+```{r}
+write_rds(mpsz_var, "data/rds/mpsz_var.rds")
+```
+
+# Preparing spflow objects
+Let us retrieve by using the code chunk below
+```{r}
+mpsz_nb <- read_rds("data/rds/mpsz_nb.rds")
+mpsz_flow <- read_rds("data/rds/mpsz_flow.rds")
+mpsz_var <- read_rds("data/rds/mpsz_var.rds")
+```
+
+## Creating spflow_network-class objects
+For our model, we choose the contiguity based neighborhood structure.
+```{r}
+mpsz_net <- spflow_network(
+  id_net = "sg",
+  node_neighborhood = nb2mat(mpsz_nb$by_contiguity),
+  node_data = mpsz_var,
+  node_key_column = "SZ_CODE")
+
+mpsz_net
+```
+## Creating spflow_network-class object
+In spflow package, spflow_network_pair()
+
+```{r}
+mpsz_net_pairs <- spflow_network_pair(
+  id_orig_net = "sg",
+  id_dest_net = "sg",
+  pair_data = mpsz_flow,
+  orig_key_column = "ORIGIN_SZ",
+  dest_key_column = "DESTIN_SZ")
+
+mpsz_net_pairs
+```
+
+## Creating spflow_network_multi-class object
+
+```{r}
+mpsz_multi_net <-  spflow_network_multi(mpsz_net,
+                                   mpsz_net_pairs)
+mpsz_multi_net
+```
+
+Given the information on origins, destinations and OD pairs we can use the spflow_map() method for a simple geographic representation of the largest flows.
+```{r}
+plot(mpsz$geometry)
+spflow_map(
+  mpsz_multi_net,
+  flow_var = "TRIPS",
+  add = TRUE, 
+  legend_position = "bottomleft",
+  filter_lowest = .999, 
+  remove_intra = TRUE,
+  cex = 1)
+```
+
+## Correlation Analysis
+In order to avoid including explanatory variables that are highly correlated, spflow provides two functions:
+
+pair_cor() to create a correlation matrix, and
+cor_image() to plot the correlation matrix as a correlogram.
+```{r}
+cor_formula <- log(1 + TRIPS) ~ 
+    BUSSTOP_COUNT +
+    AGE7_12 +
+    AGE13_24 +
+    AGE25_64 +
+    SCHOOL_COUNT +
+    BUSINESS_COUNT +
+    RETAILS_COUNT +
+    FINSERV_COUNT +
+    P_(log(DISTANCE + 1))
+
+cor_mat <- pair_cor(
+  mpsz_multi_net, 
+  spflow_formula = cor_formula, 
+  add_lags_x = FALSE)
+
+colnames(cor_mat) <- paste0(
+  substr(
+    colnames(cor_mat),1,3),"...")
+
+cor_image(cor_mat)
+```
+
+# Model Calibration
+## The base model
+
+

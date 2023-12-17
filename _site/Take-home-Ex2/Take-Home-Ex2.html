@@ -170,6 +170,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../In-class_Ex/In-class_Ex4/In-class_Ex4SIMS.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 4-SIMS</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../In-class_Ex/In-class_Ex5/In-class_Ex5.html" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 5</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -224,22 +228,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#extracting-the-data" id="toc-extracting-the-data" class="nav-link" data-scroll-target="#extracting-the-data">3.2Extracting the data</a>
   <ul class="collapse">
   <li><a href="#weekday-morning-peak" id="toc-weekday-morning-peak" class="nav-link" data-scroll-target="#weekday-morning-peak">3.2.1Weekday morning peak</a></li>
+  </ul></li>
+  <li><a href="#create-hexagon-grid" id="toc-create-hexagon-grid" class="nav-link" data-scroll-target="#create-hexagon-grid">3.3 Create Hexagon grid</a></li>
+  <li><a href="#geospatial-data-wrangling" id="toc-geospatial-data-wrangling" class="nav-link" data-scroll-target="#geospatial-data-wrangling">3.4Geospatial data wrangling</a>
+  <ul class="collapse">
   <li><a href="#combining-busstop-and-hexagon-grid" id="toc-combining-busstop-and-hexagon-grid" class="nav-link" data-scroll-target="#combining-busstop-and-hexagon-grid">3.4.1Combining Busstop and Hexagon grid</a></li>
   <li><a href="#left-join-weekday-morning-peak" id="toc-left-join-weekday-morning-peak" class="nav-link" data-scroll-target="#left-join-weekday-morning-peak">3.4.2Left join weekday morning peak</a></li>
   <li><a href="#checking-duplicate-records" id="toc-checking-duplicate-records" class="nav-link" data-scroll-target="#checking-duplicate-records">3.4.3Checking duplicate records</a></li>
   <li><a href="#retain-unique-records" id="toc-retain-unique-records" class="nav-link" data-scroll-target="#retain-unique-records">3.4.4 Retain unique records</a></li>
+  <li><a href="#remove-grid-without-value-of-0" id="toc-remove-grid-without-value-of-0" class="nav-link" data-scroll-target="#remove-grid-without-value-of-0">3.4.5Remove grid without value of 0</a></li>
   </ul></li>
+  </ul></li>
+  <li><a href="#creating-desire-lines" id="toc-creating-desire-lines" class="nav-link" data-scroll-target="#creating-desire-lines">4. Creating desire lines</a>
+  <ul class="collapse">
   <li><a href="#morning-trips-more-than-5000" id="toc-morning-trips-more-than-5000" class="nav-link" data-scroll-target="#morning-trips-more-than-5000">4.1Morning trips more than 5000</a></li>
+  <li><a href="#morning-trips-more-than-10000" id="toc-morning-trips-more-than-10000" class="nav-link" data-scroll-target="#morning-trips-more-than-10000">4.2 Morning trips more than 10000</a></li>
   <li><a href="#morning-trips-more-than-50000" id="toc-morning-trips-more-than-50000" class="nav-link" data-scroll-target="#morning-trips-more-than-50000">4.3Morning trips more than 50000</a></li>
-  <li><a href="#data-integration" id="toc-data-integration" class="nav-link" data-scroll-target="#data-integration">5.1Data Integration</a>
+  </ul></li>
+  <li><a href="#assemble-propulsive-and-attractiveness-variables-by-using-aspatial-and-geospatial" id="toc-assemble-propulsive-and-attractiveness-variables-by-using-aspatial-and-geospatial" class="nav-link" data-scroll-target="#assemble-propulsive-and-attractiveness-variables-by-using-aspatial-and-geospatial">5.Assemble propulsive and attractiveness variables by using aspatial and geospatial</a>
+  <ul class="collapse">
+  <li><a href="#data-integration" id="toc-data-integration" class="nav-link" data-scroll-target="#data-integration">5.1Data Integration</a></li>
+  <li><a href="#replace-0-to-0.99-for-the-propulsive-and-attractiveness-variables." id="toc-replace-0-to-0.99-for-the-propulsive-and-attractiveness-variables." class="nav-link" data-scroll-target="#replace-0-to-0.99-for-the-propulsive-and-attractiveness-variables.">5.2replace 0 to 0.99 for the propulsive and attractiveness variables.</a></li>
+  </ul></li>
+  <li><a href="#computing-distance-matrix" id="toc-computing-distance-matrix" class="nav-link" data-scroll-target="#computing-distance-matrix">6.Computing Distance Matrix</a>
+  <ul class="collapse">
+  <li><a href="#converting-from-sf-data.table-to-spatialpolygonsdataframe" id="toc-converting-from-sf-data.table-to-spatialpolygonsdataframe" class="nav-link" data-scroll-target="#converting-from-sf-data.table-to-spatialpolygonsdataframe">6.1Converting from sf data.table to SpatialPolygonsDataFrame</a></li>
+  <li><a href="#labelling-column-and-row-heanders-of-a-distance-matrix" id="toc-labelling-column-and-row-heanders-of-a-distance-matrix" class="nav-link" data-scroll-target="#labelling-column-and-row-heanders-of-a-distance-matrix">6.3Labelling column and row heanders of a distance matrix</a></li>
+  <li><a href="#pivoting-distance-value-by-grid_id" id="toc-pivoting-distance-value-by-grid_id" class="nav-link" data-scroll-target="#pivoting-distance-value-by-grid_id">6.4Pivoting distance value by grid_id</a></li>
+  <li><a href="#updating-intra-zonal-distances" id="toc-updating-intra-zonal-distances" class="nav-link" data-scroll-target="#updating-intra-zonal-distances">6.5Updating intra-zonal distances</a></li>
+  </ul></li>
+  <li><a href="#spatial-interaction-modelling" id="toc-spatial-interaction-modelling" class="nav-link" data-scroll-target="#spatial-interaction-modelling">7.Spatial Interaction Modelling</a>
+  <ul class="collapse">
+  <li><a href="#preparing-flow-data" id="toc-preparing-flow-data" class="nav-link" data-scroll-target="#preparing-flow-data">7.1 Preparing flow data</a>
+  <ul class="collapse">
+  <li><a href="#preparing-inter-zonal-flow-data" id="toc-preparing-inter-zonal-flow-data" class="nav-link" data-scroll-target="#preparing-inter-zonal-flow-data">7.1.1Preparing inter-zonal flow data</a></li>
+  <li><a href="#combining-flow-data-with-distance-value" id="toc-combining-flow-data-with-distance-value" class="nav-link" data-scroll-target="#combining-flow-data-with-distance-value">7.1.2 Combining flow data with distance value</a></li>
+  <li><a href="#save-rds" id="toc-save-rds" class="nav-link" data-scroll-target="#save-rds">7.1.3save rds</a></li>
+  <li><a href="#calibrating-spatial-interaction-models" id="toc-calibrating-spatial-interaction-models" class="nav-link" data-scroll-target="#calibrating-spatial-interaction-models">7.1.4Calibrating Spatial Interaction Models</a></li>
+  <li><a href="#combining-passenger-volume-data-with-distance-value" id="toc-combining-passenger-volume-data-with-distance-value" class="nav-link" data-scroll-target="#combining-passenger-volume-data-with-distance-value">7.1.5Combining passenger volume data with distance value</a></li>
+  <li><a href="#checking-zero-values" id="toc-checking-zero-values" class="nav-link" data-scroll-target="#checking-zero-values">7.1.6Checking zero values</a></li>
+  <li><a href="#correlation-analysis" id="toc-correlation-analysis" class="nav-link" data-scroll-target="#correlation-analysis">7.1.7 Correlation Analysis</a></li>
+  </ul></li>
+  <li><a href="#unconstrained-model" id="toc-unconstrained-model" class="nav-link" data-scroll-target="#unconstrained-model">7.2 Unconstrained Model</a>
   <ul class="collapse">
   <li><a href="#goodness-of-fit" id="toc-goodness-of-fit" class="nav-link" data-scroll-target="#goodness-of-fit">7.2.1 Goodness of fit</a></li>
   </ul></li>
-  <li><a href="#origin--production--constrained-model" id="toc-origin--production--constrained-model" class="nav-link" data-scroll-target="#origin--production--constrained-model">7.3 Origin- (Production-) constrained Model</a>
+  <li><a href="#origin--production--constrained-model" id="toc-origin--production--constrained-model" class="nav-link" data-scroll-target="#origin--production--constrained-model">7.3 Origin- (Production-) constrained Model</a></li>
+  <li><a href="#doubly-constrained-model" id="toc-doubly-constrained-model" class="nav-link" data-scroll-target="#doubly-constrained-model">7.4Doubly constrained model</a>
   <ul class="collapse">
   <li><a href="#goodness-of-fit-1" id="toc-goodness-of-fit-1" class="nav-link" data-scroll-target="#goodness-of-fit-1">7.4.1Goodness of fit</a></li>
   </ul></li>
+  <li><a href="#destination-constrained" id="toc-destination-constrained" class="nav-link" data-scroll-target="#destination-constrained">7.5 Destination constrained</a></li>
   </ul></li>
+  <li><a href="#model-comparison" id="toc-model-comparison" class="nav-link" data-scroll-target="#model-comparison">8 Model comparison</a>
+  <ul class="collapse">
+  <li><a href="#statistical-measures-let-us-create-a-list-called-model_list-by-using-the-code-chunk-below." id="toc-statistical-measures-let-us-create-a-list-called-model_list-by-using-the-code-chunk-below." class="nav-link" data-scroll-target="#statistical-measures-let-us-create-a-list-called-model_list-by-using-the-code-chunk-below.">8.1Statistical measures let us create a list called model_list by using the code chunk below.</a></li>
+  <li><a href="#visualising-fitted-values-we-will-extract-the-fitted-values-from-origin-constrained-model-by-using-the-code-chunk-below." id="toc-visualising-fitted-values-we-will-extract-the-fitted-values-from-origin-constrained-model-by-using-the-code-chunk-below." class="nav-link" data-scroll-target="#visualising-fitted-values-we-will-extract-the-fitted-values-from-origin-constrained-model-by-using-the-code-chunk-below.">8.2 Visualising fitted values we will extract the fitted values from Origin-constrained Model by using the code chunk below.</a></li>
+  </ul></li>
+  <li><a href="#modelling-results" id="toc-modelling-results" class="nav-link" data-scroll-target="#modelling-results">9.Modelling Results</a></li>
   </ul>
 </nav>
     </div>
@@ -347,7 +393,10 @@ Projected CRS: SVY21</code></pre>
 the `.groups` argument.</code></pre>
 </div>
 </div>
-<p>##3.3 Create Hexagon grid</p>
+</section>
+</section>
+<section id="create-hexagon-grid" class="level2">
+<h2 class="anchored" data-anchor-id="create-hexagon-grid">3.3 Create Hexagon grid</h2>
 <p>Use busstop to Make a hexagonal grid, set distance as 375m.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>area_honeycomb_grid <span class="ot">=</span> <span class="fu">st_make_grid</span>(busstop, <span class="at">cellsize =</span> <span class="dv">750</span>, <span class="at">what =</span> <span class="st">"polygons"</span>, <span class="at">square =</span> <span class="cn">FALSE</span>)</span>
@@ -361,8 +410,9 @@ the `.groups` argument.</code></pre>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>bus_count_hexagon <span class="ot">=</span> <span class="fu">filter</span>(honeycomb_grid_sf, bus_num <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>##3.4Geospatial data wrangling</p>
 </section>
+<section id="geospatial-data-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="geospatial-data-wrangling">3.4Geospatial data wrangling</h2>
 <section id="combining-busstop-and-hexagon-grid" class="level3">
 <h3 class="anchored" data-anchor-id="combining-busstop-and-hexagon-grid">3.4.1Combining Busstop and Hexagon grid</h3>
 <p>Combine busstop and hexagon data set by US_STOP_N and grid_id.</p>
@@ -440,7 +490,9 @@ all geometries</code></pre>
 `.groups` argument.</code></pre>
 </div>
 </div>
-<p>###3.4.5Remove grid without value of 0</p>
+</section>
+<section id="remove-grid-without-value-of-0" class="level3">
+<h3 class="anchored" data-anchor-id="remove-grid-without-value-of-0">3.4.5Remove grid without value of 0</h3>
 <p>Filter out the records which TOT_TRIPS is NA.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>od_data1 <span class="ot">=</span> <span class="fu">filter</span>(od_data1, TOT_TRIPS <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -448,7 +500,11 @@ all geometries</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>od_data1 <span class="ot">&lt;-</span> od_data1[od_data1<span class="sc">$</span>ORIGIN_SZ<span class="sc">!=</span>od_data1<span class="sc">$</span>DESTIN_SZ,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#4. Creating desire lines</p>
+</section>
+</section>
+</section>
+<section id="creating-desire-lines" class="level1">
+<h1>4. Creating desire lines</h1>
 <p>In this code chunk below, od2line() of stplanr package is used to create the desire lines.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>flowLine <span class="ot">&lt;-</span> <span class="fu">od2line</span>(<span class="at">flow =</span> od_data1, </span>
@@ -458,8 +514,6 @@ all geometries</code></pre>
 <pre><code>Creating centroids representing desire line start and end points.</code></pre>
 </div>
 </div>
-</section>
-</section>
 <section id="morning-trips-more-than-5000" class="level2">
 <h2 class="anchored" data-anchor-id="morning-trips-more-than-5000">4.1Morning trips more than 5000</h2>
 <div class="cell">
@@ -491,7 +545,9 @@ shorter object length</code></pre>
 </div>
 </div>
 <p>From the figure we can observe that Traffic is heavy in the north-east side of the Malaysian-Singaporean gateway, as well as in the woodlands, jurong east, and tampines districts.</p>
-<p>##4.2 Morning trips more than 10000</p>
+</section>
+<section id="morning-trips-more-than-10000" class="level2">
+<h2 class="anchored" data-anchor-id="morning-trips-more-than-10000">4.2 Morning trips more than 10000</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz) <span class="sc">+</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
@@ -553,8 +609,10 @@ shorter object length</code></pre>
 </div>
 </div>
 <p>From the figure we can observe that The Malaysian gate and Woodlands are the main hubs for human movement.</p>
-<p>#5.Assemble propulsive and attractiveness variables by using aspatial and geospatial</p>
 </section>
+</section>
+<section id="assemble-propulsive-and-attractiveness-variables-by-using-aspatial-and-geospatial" class="level1">
+<h1>5.Assemble propulsive and attractiveness variables by using aspatial and geospatial</h1>
 <section id="data-integration" class="level2">
 <h2 class="anchored" data-anchor-id="data-integration">5.1Data Integration</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -805,7 +863,9 @@ Projected CRS: SVY21</code></pre>
  Max.   :139.000   Max.   :13.000   Max.   :103.00   Max.   :133.000  </code></pre>
 </div>
 </div>
-<p>##5.2replace 0 to 0.99 for the propulsive and attractiveness variables.</p>
+</section>
+<section id="replace-0-to-0.99-for-the-propulsive-and-attractiveness-variables." class="level2">
+<h2 class="anchored" data-anchor-id="replace-0-to-0.99-for-the-propulsive-and-attractiveness-variables.">5.2replace 0 to 0.99 for the propulsive and attractiveness variables.</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>flow_data<span class="sc">$</span>ENTERTN_COUNT <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
 <span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  flow_data<span class="sc">$</span>ENTERTN_COUNT <span class="sc">==</span> <span class="dv">0</span>,</span>
@@ -845,8 +905,12 @@ Projected CRS: SVY21</code></pre>
  Max.   :139.000   Max.   :13.000   Max.   :103.00   Max.   :133.000  </code></pre>
 </div>
 </div>
-<p>#6.Computing Distance Matrix</p>
-<p>##6.1Converting from sf data.table to SpatialPolygonsDataFrame</p>
+</section>
+</section>
+<section id="computing-distance-matrix" class="level1">
+<h1>6.Computing Distance Matrix</h1>
+<section id="converting-from-sf-data.table-to-spatialpolygonsdataframe" class="level2">
+<h2 class="anchored" data-anchor-id="converting-from-sf-data.table-to-spatialpolygonsdataframe">6.1Converting from sf data.table to SpatialPolygonsDataFrame</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>bus_count_hexagon_sp <span class="ot">&lt;-</span> <span class="fu">as</span>(bus_count_hexagon, <span class="st">"Spatial"</span>)</span>
 <span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>bus_count_hexagon_sp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -891,7 +955,9 @@ max values  :    2505,      19,             97,             9,      133,        
 [10,] 1299.038    0.000</code></pre>
 </div>
 </div>
-<p>##6.3Labelling column and row heanders of a distance matrix</p>
+</section>
+<section id="labelling-column-and-row-heanders-of-a-distance-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="labelling-column-and-row-heanders-of-a-distance-matrix">6.3Labelling column and row heanders of a distance matrix</h2>
 <p>we will create a list sorted according to the the distance matrix by planning sub-zone code.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>sz_names <span class="ot">&lt;-</span> bus_count_hexagon_sp<span class="sc">$</span>grid_id</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -900,7 +966,9 @@ max values  :    2505,      19,             97,             9,      133,        
 <div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dist) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(sz_names)</span>
 <span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(dist) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(sz_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>##6.4Pivoting distance value by grid_id</p>
+</section>
+<section id="pivoting-distance-value-by-grid_id" class="level2">
+<h2 class="anchored" data-anchor-id="pivoting-distance-value-by-grid_id">6.4Pivoting distance value by grid_id</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>distPair <span class="ot">&lt;-</span> <span class="fu">melt</span>(dist) <span class="sc">%&gt;%</span></span>
 <span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">dist =</span> value)</span>
@@ -919,7 +987,9 @@ max values  :    2505,      19,             97,             9,      133,        
 10   89   23 4683.748</code></pre>
 </div>
 </div>
-<p>##6.5Updating intra-zonal distances</p>
+</section>
+<section id="updating-intra-zonal-distances" class="level2">
+<h2 class="anchored" data-anchor-id="updating-intra-zonal-distances">6.5Updating intra-zonal distances</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>distPair <span class="sc">%&gt;%</span></span>
 <span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dist <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
@@ -34299,9 +34369,14 @@ max values  :    2505,      19,             97,             9,      133,        
 <div class="cell">
 <div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(distPair, <span class="st">"data/rds/distPair.rds"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#7.Spatial Interaction Modelling</p>
-<p>##7.1 Preparing flow data</p>
-<p>###7.1.1Preparing inter-zonal flow data</p>
+</section>
+</section>
+<section id="spatial-interaction-modelling" class="level1">
+<h1>7.Spatial Interaction Modelling</h1>
+<section id="preparing-flow-data" class="level2">
+<h2 class="anchored" data-anchor-id="preparing-flow-data">7.1 Preparing flow data</h2>
+<section id="preparing-inter-zonal-flow-data" class="level3">
+<h3 class="anchored" data-anchor-id="preparing-inter-zonal-flow-data">7.1.1Preparing inter-zonal flow data</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>flow_data<span class="sc">$</span>FlowNoIntra <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
 <span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>  flow_data<span class="sc">$</span>DESTIN_SZ <span class="sc">==</span> flow_data<span class="sc">$</span>ORIGIN_SZ, </span>
@@ -34310,7 +34385,9 @@ max values  :    2505,      19,             97,             9,      133,        
 <span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>  flow_data<span class="sc">$</span>DESTIN_SZ <span class="sc">==</span> flow_data<span class="sc">$</span>ORIGIN_SZ, </span>
 <span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.000001</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>###7.1.2 Combining flow data with distance value</p>
+</section>
+<section id="combining-flow-data-with-distance-value" class="level3">
+<h3 class="anchored" data-anchor-id="combining-flow-data-with-distance-value">7.1.2 Combining flow data with distance value</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>flow_data<span class="sc">$</span>ORIGIN_SZ <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(flow_data<span class="sc">$</span>ORIGIN_SZ)</span>
 <span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>flow_data<span class="sc">$</span>DESTIN_SZ <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(flow_data<span class="sc">$</span>DESTIN_SZ)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -34325,7 +34402,9 @@ max values  :    2505,      19,             97,             9,      133,        
 <span id="cb98-7"><a href="#cb98-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ORIGIN_SZ"</span> <span class="ot">=</span> <span class="st">"orig"</span>,</span>
 <span id="cb98-8"><a href="#cb98-8" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"DESTIN_SZ"</span> <span class="ot">=</span> <span class="st">"dest"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>###7.1.3save rds</p>
+</section>
+<section id="save-rds" class="level3">
+<h3 class="anchored" data-anchor-id="save-rds">7.1.3save rds</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>duplicate <span class="ot">&lt;-</span> flow_data1 <span class="sc">%&gt;%</span></span>
 <span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by_all</span>() <span class="sc">%&gt;%</span></span>
@@ -34364,7 +34443,9 @@ max values  :    2505,      19,             97,             9,      133,        
  Max.   :96644   Max.   :1   Max.   :24784  </code></pre>
 </div>
 </div>
-<p>###7.1.4Calibrating Spatial Interaction Models</p>
+</section>
+<section id="calibrating-spatial-interaction-models" class="level3">
+<h3 class="anchored" data-anchor-id="calibrating-spatial-interaction-models">7.1.4Calibrating Spatial Interaction Models</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>flow_data1<span class="sc">$</span>FlowNoIntra <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
 <span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>  flow_data1<span class="sc">$</span>ORIGIN_SZ <span class="sc">==</span> flow_data1<span class="sc">$</span>DESTIN_SZ, </span>
@@ -34408,7 +34489,9 @@ max values  :    2505,      19,             97,             9,      133,        
  Max.   :96644   Max.   :1  </code></pre>
 </div>
 </div>
-<p>###7.1.5Combining passenger volume data with distance value</p>
+</section>
+<section id="combining-passenger-volume-data-with-distance-value" class="level3">
+<h3 class="anchored" data-anchor-id="combining-passenger-volume-data-with-distance-value">7.1.5Combining passenger volume data with distance value</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>flow_data1<span class="sc">$</span>ORIGIN_SZ <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(flow_data1<span class="sc">$</span>ORIGIN_SZ)</span>
 <span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>flow_data1<span class="sc">$</span>DESTIN_SZ <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(flow_data1<span class="sc">$</span>DESTIN_SZ)</span>
@@ -34421,7 +34504,9 @@ max values  :    2505,      19,             97,             9,      133,        
 <span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ORIGIN_SZ"</span> <span class="ot">=</span> <span class="st">"orig"</span>,</span>
 <span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"DESTIN_SZ"</span> <span class="ot">=</span> <span class="st">"dest"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>###7.1.6Checking zero values</p>
+</section>
+<section id="checking-zero-values" class="level3">
+<h3 class="anchored" data-anchor-id="checking-zero-values">7.1.6Checking zero values</h3>
 <p>Convert DESTIN_SZ and ORIGIN_SZ to character, in order to do poisson regression</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>flow_data1<span class="sc">$</span>DESTIN_SZ <span class="ot">&lt;-</span> <span class="fu">as.character</span>(flow_data1<span class="sc">$</span>DESTIN_SZ)</span>
@@ -34457,7 +34542,9 @@ max values  :    2505,      19,             97,             9,      133,        
  Max.   :133.000   Max.   :96644   Max.   :1   Max.   :24784  </code></pre>
 </div>
 </div>
-<p>###7.1.7 Correlation Analysis</p>
+</section>
+<section id="correlation-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="correlation-analysis">7.1.7 Correlation Analysis</h3>
 <p>Identify if there are any correlation between variables</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>vars.cor <span class="ot">=</span> <span class="fu">cor</span>(flow_data2[,<span class="dv">3</span><span class="sc">:</span><span class="dv">9</span>])</span>
@@ -34472,7 +34559,10 @@ max values  :    2505,      19,             97,             9,      133,        
 </div>
 </div>
 <p>Based on the correlation result ,we will remove FINSERV_COUNT variable.</p>
-<p>##7.2 Unconstrained Model</p>
+</section>
+</section>
+<section id="unconstrained-model" class="level2">
+<h2 class="anchored" data-anchor-id="unconstrained-model">7.2 Unconstrained Model</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>SIM<span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TOT_TRIPS <span class="sc">~</span> </span>
 <span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">log</span>(ENTERTN_COUNT) <span class="sc">+</span></span>
@@ -35409,7 +35499,9 @@ Number of Fisher Scoring iterations: 7</code></pre>
 <pre><code>[1] 0.3516302</code></pre>
 </div>
 </div>
-<p>##7.4Doubly constrained model</p>
+</section>
+<section id="doubly-constrained-model" class="level2">
+<h2 class="anchored" data-anchor-id="doubly-constrained-model">7.4Doubly constrained model</h2>
 <p>we will fit a doubly constrained SIM,code chunk used is shown below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a>dbcSIM_Poisson <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TOT_TRIPS <span class="sc">~</span> </span>
@@ -37098,7 +37190,10 @@ Number of Fisher Scoring iterations: 10</code></pre>
 <pre><code>[1] 0.5872095</code></pre>
 </div>
 </div>
-<p>##7.5 Destination constrained</p>
+</section>
+</section>
+<section id="destination-constrained" class="level2">
+<h2 class="anchored" data-anchor-id="destination-constrained">7.5 Destination constrained</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb131"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1" aria-hidden="true" tabindex="-1"></a>decSIM_Possion <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TOT_TRIPS <span class="sc">~</span> </span>
 <span id="cb131-2"><a href="#cb131-2" aria-hidden="true" tabindex="-1"></a>                  DESTIN_SZ <span class="sc">+</span></span>
@@ -37965,8 +38060,12 @@ Number of Fisher Scoring iterations: 8</code></pre>
 <pre><code>[1] 0.305349</code></pre>
 </div>
 </div>
-<p>#8 Model comparison</p>
-<p>##8.1Statistical measures let us create a list called model_list by using the code chunk below.</p>
+</section>
+</section>
+<section id="model-comparison" class="level1">
+<h1>8 Model comparison</h1>
+<section id="statistical-measures-let-us-create-a-list-called-model_list-by-using-the-code-chunk-below." class="level2">
+<h2 class="anchored" data-anchor-id="statistical-measures-let-us-create-a-list-called-model_list-by-using-the-code-chunk-below.">8.1Statistical measures let us create a list called model_list by using the code chunk below.</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb135"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a>model_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb135-2"><a href="#cb135-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unconstrained =</span> SIM,</span>
@@ -37990,7 +38089,9 @@ Destination_Constrained |   glm | 1580.629</code></pre>
 </div>
 </div>
 <p>The print above reveals that original constrained SIM is the best model among the four SIMs because it has the smallest RMSE value of 1219.272.</p>
-<p>##8.2 Visualising fitted values we will extract the fitted values from Origin-constrained Model by using the code chunk below.</p>
+</section>
+<section id="visualising-fitted-values-we-will-extract-the-fitted-values-from-origin-constrained-model-by-using-the-code-chunk-below." class="level2">
+<h2 class="anchored" data-anchor-id="visualising-fitted-values-we-will-extract-the-fitted-values-from-origin-constrained-model-by-using-the-code-chunk-below.">8.2 Visualising fitted values we will extract the fitted values from Origin-constrained Model by using the code chunk below.</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(orcSIM_Poisson<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span></span>
 <span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -38927,12 +39028,13 @@ Number of Fisher Scoring iterations: 7</code></pre>
 <p><img src="Take-Home-Ex2_files/figure-html/unnamed-chunk-101-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>#9.Modelling Results</p>
+</section>
+</section>
+<section id="modelling-results" class="level1">
+<h1>9.Modelling Results</h1>
 <p>Based on the R-squre result and the RMSE value.doubly constrained model has the largest R-squre value and smallest RMSE value,However, the relationship between many parameters is NA,so it cannot be used. So we choose the second largest R-squre value model,the original constraint model, and the R-squre is 0.37. The coefficient for TRAIN_COUNT is the most significant, This might be because larger areas with more of stations—like retail centers or city centers, where people move around more—are typically those with higher population densities. Followed by the ENTERN_COUNT and FB count,This may be due to the negative correlation in restaurants and entertainment venues where people stay indoors for long periods of time. FOr the last HDB_count,The correlation is weaker because of the increase in teleworking nowadays so people are not in the habit of going out .</p>
 
 
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->

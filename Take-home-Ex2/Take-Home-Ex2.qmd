@@ -61,7 +61,7 @@ odbus6_9 <- odbus %>%
   summarise(TRIPS = sum(TOTAL_TRIPS))
 ```
 
-##3.3 Create Hexagon grid
+## 3.3 Create Hexagon grid
 
 Use busstop to Make a hexagonal grid, set distance as 375m.
 
@@ -79,7 +79,7 @@ bus_count_hexagon = filter(honeycomb_grid_sf, bus_num > 0)
 
 ```
 
-##3.4Geospatial data wrangling
+## 3.4Geospatial data wrangling
 
 ### 3.4.1Combining Busstop and Hexagon grid
 
@@ -147,7 +147,7 @@ od_data1 <- od_data1 %>%
 
 ```
 
-###3.4.5Remove grid without value of 0
+### 3.4.5Remove grid without value of 0
 
 Filter out the records which TOT_TRIPS is NA.
 
@@ -159,7 +159,7 @@ od_data1 = filter(od_data1, TOT_TRIPS > 0)
 od_data1 <- od_data1[od_data1$ORIGIN_SZ!=od_data1$DESTIN_SZ,]
 ```
 
-#4. Creating desire lines
+# 4. Creating desire lines
 
 In this code chunk below, od2line() of stplanr package is used to create the desire lines.
 
@@ -189,7 +189,7 @@ tm_shape() +
 
 From the figure we can observe that Traffic is heavy in the north-east side of the Malaysian-Singaporean gateway, as well as in the woodlands, jurong east, and tampines districts.
 
-##4.2 Morning trips more than 10000
+## 4.2 Morning trips more than 10000
 
 ```{r}
 tm_shape(mpsz) +
@@ -227,7 +227,7 @@ tm_shape() +
 
 From the figure we can observe that The Malaysian gate and Woodlands are the main hubs for human movement.
 
-#5.Assemble propulsive and attractiveness variables by using aspatial and geospatial
+# 5.Assemble propulsive and attractiveness variables by using aspatial and geospatial
 
 ## 5.1Data Integration
 
@@ -426,7 +426,7 @@ summary(flow_data)
 
 ```
 
-##5.2replace 0 to 0.99 for the propulsive and attractiveness variables.
+## 5.2replace 0 to 0.99 for the propulsive and attractiveness variables.
 
 ```{r}
 flow_data$ENTERTN_COUNT <- ifelse(
@@ -456,9 +456,9 @@ summary(flow_data)
 
 ```
 
-#6.Computing Distance Matrix
+# 6.Computing Distance Matrix
 
-##6.1Converting from sf data.table to SpatialPolygonsDataFrame
+## 6.1Converting from sf data.table to SpatialPolygonsDataFrame
 
 ```{r}
 bus_count_hexagon_sp <- as(bus_count_hexagon, "Spatial")
@@ -477,7 +477,7 @@ head(dist, n=c(10, 10))
 
 ```
 
-##6.3Labelling column and row heanders of a distance matrix
+## 6.3Labelling column and row heanders of a distance matrix
 
 we will create a list sorted according to the the distance matrix by planning sub-zone code.
 
@@ -494,7 +494,7 @@ rownames(dist) <- paste0(sz_names)
 
 ```
 
-##6.4Pivoting distance value by grid_id
+## 6.4Pivoting distance value by grid_id
 
 ```{r}
 distPair <- melt(dist) %>%
@@ -504,7 +504,7 @@ head(distPair, 10)
 
 ```
 
-##6.5Updating intra-zonal distances
+## 6.5Updating intra-zonal distances
 
 ```{r}
 distPair %>%
@@ -541,11 +541,11 @@ distPair
 write_rds(distPair, "data/rds/distPair.rds") 
 ```
 
-#7.Spatial Interaction Modelling
+# 7.Spatial Interaction Modelling
 
-##7.1 Preparing flow data
+## 7.1 Preparing flow data
 
-###7.1.1Preparing inter-zonal flow data
+### 7.1.1Preparing inter-zonal flow data
 
 ```{r}
 flow_data$FlowNoIntra <- ifelse(
@@ -557,7 +557,7 @@ flow_data$offset <- ifelse(
 
 ```
 
-###7.1.2 Combining flow data with distance value
+### 7.1.2 Combining flow data with distance value
 
 ```{r}
 flow_data$ORIGIN_SZ <- as.factor(flow_data$ORIGIN_SZ)
@@ -577,7 +577,7 @@ flow_data1 <- flow_data %>%
 
 ```
 
-###7.1.3save rds
+### 7.1.3save rds
 
 ```{r}
 duplicate <- flow_data1 %>%
@@ -601,7 +601,7 @@ write_rds(flow_data1, "data/rds/flow_data1.rds")
 summary(flow_data1)
 ```
 
-###7.1.4Calibrating Spatial Interaction Models
+### 7.1.4Calibrating Spatial Interaction Models
 
 ```{r}
 
@@ -631,7 +631,7 @@ flow_data1 <- unique(flow_data)
 summary(flow_data)
 ```
 
-###7.1.5Combining passenger volume data with distance value
+### 7.1.5Combining passenger volume data with distance value
 
 ```{r}
 flow_data1$ORIGIN_SZ <- as.factor(flow_data1$ORIGIN_SZ)
@@ -647,7 +647,7 @@ flow_data1 <- flow_data1 %>%
                     "DESTIN_SZ" = "dest"))
 ```
 
-###7.1.6Checking zero values
+### 7.1.6Checking zero values
 
 Convert DESTIN_SZ and ORIGIN_SZ to character, in order to do poisson regression
 
@@ -668,7 +668,7 @@ flow_data2 <- flow_data1 %>%
 summary(flow_data2)
 ```
 
-###7.1.7 Correlation Analysis
+### 7.1.7 Correlation Analysis
 
 Identify if there are any correlation between variables
 
@@ -686,7 +686,7 @@ corrplot.mixed(vars.cor,
 
 Based on the correlation result ,we will remove FINSERV_COUNT variable.
 
-##7.2 Unconstrained Model
+## 7.2 Unconstrained Model
 
 ```{r}
 SIM<- glm(formula = TOT_TRIPS ~ 
@@ -766,7 +766,7 @@ CalcRSquared(orcSIM_Poisson$data$TOT_TRIPS, orcSIM_Poisson$fitted.values)
 
 ```
 
-##7.4Doubly constrained model
+## 7.4Doubly constrained model
 
 we will fit a doubly constrained SIM,code chunk used is shown below.
 
@@ -799,7 +799,7 @@ CalcRSquared(dbcSIM_Poisson$data$TOT_TRIPS, dbcSIM_Poisson$fitted.values)
 
 ```
 
-##7.5 Destination constrained
+## 7.5 Destination constrained
 
 ```{r}
 decSIM_Possion <- glm(formula = TOT_TRIPS ~ 
@@ -826,9 +826,9 @@ CalcRSquared(decSIM_Possion$data$TOT_TRIPS, decSIM_Possion$fitted.values)
 
 ```
 
-#8 Model comparison
+# 8 Model comparison
 
-##8.1Statistical measures let us create a list called model_list by using the code chunk below.
+## 8.1Statistical measures let us create a list called model_list by using the code chunk below.
 
 ```{r}
 model_list <- list(
@@ -849,7 +849,7 @@ compare_performance(model_list,
 
 The print above reveals that original constrained SIM is the best model among the four SIMs because it has the smallest RMSE value of 1219.272.
 
-##8.2 Visualising fitted values we will extract the fitted values from Origin-constrained Model by using the code chunk below.
+## 8.2 Visualising fitted values we will extract the fitted values from Origin-constrained Model by using the code chunk below.
 
 ```{r}
 df <- as.data.frame(orcSIM_Poisson$fitted.values) %>%
@@ -961,11 +961,6 @@ ggarrange(dec, dbc,uc, orc,
 
 ```
 
-#9.Modelling Results
+# 9.Modelling Results
 
-Based on the R-squre result and the RMSE value.doubly constrained model has the largest R-squre value and smallest RMSE value,However, the relationship between many parameters is NA,so it cannot be used. So we choose the second largest R-squre value model,the original constraint model, and the R-squre is 0.37.
-The coefficient for TRAIN_COUNT is the most significant, This might be because larger areas with more of stations—like retail centers or city centers, where people move around more—are typically those with higher population densities.
-Followed by the ENTERN_COUNT and FB count,This may be due to the negative correlation in restaurants and entertainment venues where people stay indoors for long periods of time.
-FOr the last HDB_count,The correlation is weaker because of the increase in teleworking nowadays so people are not in the habit of going out .
-
-
+Based on the R-squre result and the RMSE value.doubly constrained model has the largest R-squre value and smallest RMSE value,However, the relationship between many parameters is NA,so it cannot be used. So we choose the second largest R-squre value model,the original constraint model, and the R-squre is 0.37. The coefficient for TRAIN_COUNT is the most significant, This might be because larger areas with more of stations---like retail centers or city centers, where people move around more---are typically those with higher population densities. Followed by the ENTERN_COUNT and FB count,This may be due to the negative correlation in restaurants and entertainment venues where people stay indoors for long periods of time. FOr the last HDB_count,The correlation is weaker because of the increase in teleworking nowadays so people are not in the habit of going out .
