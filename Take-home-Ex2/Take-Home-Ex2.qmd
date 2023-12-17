@@ -1,0 +1,971 @@
+---
+title: "Take-Home-Ex02"
+---
+
+# 1.Getting Started
+
+For the purpose of this exercise, four r packages will be used. They are:
+
+sf for importing, integrating, processing and transforming geospatial data. tidyverse for importing, integrating, wrangling and visualising data. tmap for creating thematic maps.
+
+```{r}
+pacman::p_load(tmap, sf, DT,spdep,sp, Matrix,stplanr,spflow,reshape2,knitr,ggpubr,
+               performance,
+               ggpubr, tidyverse,corrplot)
+
+```
+
+# 2.Preparing the Flow Data
+
+## 2.1 Importing the OD data
+
+```{r}
+odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
+```
+
+```{r}
+odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
+odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE) 
+odbus$TOTAL_TRIPS <- as.numeric(odbus$TOTAL_TRIPS)
+```
+
+# 3.Working with Geospatial Data
+
+## 3.1Importing geospatial data
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial",
+                   layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
+
+```
+
+```{r}
+busstop <- st_read(dsn = "data/geospatial", layer = "BusStop")%>%
+  st_transform(crs = 3414)
+```
+
+## 3.2Extracting the data
+
+### 3.2.1Weekday morning peak
+
+we will extract commuting flows during the weekday morning peak
+
+```{r}
+odbus6_9 <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 6 &
+           TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+##3.3 Create Hexagon grid
+
+Use busstop to Make a hexagonal grid, set distance as 375m.
+
+```{r}
+area_honeycomb_grid = st_make_grid(busstop, cellsize = 750, what = "polygons", square = FALSE)
+
+# To sf and add grid ID
+honeycomb_grid_sf = st_sf(area_honeycomb_grid) %>%
+  # add grid ID
+  mutate(grid_id = 1:length(lengths(area_honeycomb_grid)))
+
+honeycomb_grid_sf$bus_num = lengths(st_intersects(honeycomb_grid_sf, busstop))
+
+bus_count_hexagon = filter(honeycomb_grid_sf, bus_num > 0)
+
+```
+
+##3.4Geospatial data wrangling
+
+### 3.4.1Combining Busstop and Hexagon grid
+
+Combine busstop and hexagon data set by US_STOP_N and grid_id.
+
+```{r}
+busstop_hexagon <- st_intersection(busstop, honeycomb_grid_sf) %>%
+  select(BUS_STOP_N, grid_id)
+```
+
+```{r}
+write_rds(busstop_hexagon, "data/rds/busstop_hexagon.csv")  
+```
+
+### 3.4.2Left join weekday morning peak
+
+Now we will left join the weekday morning peak and combined hexagon grid.
+
+```{r}
+od_data1 <- left_join(odbus6_9 , busstop_hexagon,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_SZ = grid_id,
+         DESTIN_BS = DESTINATION_PT_CODE) 
+```
+
+### 3.4.3Checking duplicate records
+
+Check for duplicating records
+
+```{r}
+duplicate1 <- od_data1 %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+### 3.4.4 Retain unique records
+
+Use code chunk below will be used to retain the unique records.
+
+```{r}
+od_data1 <- left_join(od_data1, busstop_hexagon,
+            by = c("DESTIN_BS" = "BUS_STOP_N")) 
+
+```
+
+```{r}
+duplicate1 <- od_data1 %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+od_data1 <- unique(od_data1)
+```
+
+```{r}
+od_data1 <- od_data1 %>%
+  rename(DESTIN_SZ = grid_id) %>%
+  drop_na() %>%
+  group_by(DESTIN_SZ,ORIGIN_SZ) %>%
+  summarise(TOT_TRIPS = sum(TRIPS))
+
+```
+
+###3.4.5Remove grid without value of 0
+
+Filter out the records which TOT_TRIPS is NA.
+
+```{r}
+od_data1 = filter(od_data1, TOT_TRIPS > 0)
+```
+
+```{r}
+od_data1 <- od_data1[od_data1$ORIGIN_SZ!=od_data1$DESTIN_SZ,]
+```
+
+#4. Creating desire lines
+
+In this code chunk below, od2line() of stplanr package is used to create the desire lines.
+
+```{r}
+flowLine <- od2line(flow = od_data1, 
+                    zones = honeycomb_grid_sf,
+                    zone_code = "grid_id")
+
+```
+
+## 4.1Morning trips more than 5000
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+flowLine %>%  
+  filter(TOT_TRIPS >= 5000) %>%
+tm_shape() +
+  tm_lines(lwd = "TOT_TRIPS",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.3)
+```
+
+From the figure we can observe that Traffic is heavy in the north-east side of the Malaysian-Singaporean gateway, as well as in the woodlands, jurong east, and tampines districts.
+
+##4.2 Morning trips more than 10000
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+flowLine %>%  
+  filter(TOT_TRIPS >= 10000) %>%
+tm_shape() +
+  tm_lines(lwd = "TOT_TRIPS",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.3)
+```
+
+From the figure we can observe that Traffic is heavy from the Woodlands to TUAS and Jurong.
+
+## 4.3Morning trips more than 50000
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+flowLine %>%  
+  filter(TOT_TRIPS >= 50000) %>%
+tm_shape() +
+  tm_lines(lwd = "TOT_TRIPS",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.3)
+```
+
+From the figure we can observe that The Malaysian gate and Woodlands are the main hubs for human movement.
+
+#5.Assemble propulsive and attractiveness variables by using aspatial and geospatial
+
+## 5.1Data Integration
+
+::: panel-tabset
+### business
+
+```{r}
+business <- st_read(dsn = "data/geospatial",
+                   layer = "Business") %>%
+  st_transform(crs = 3414)
+
+
+```
+
+```{r}
+bus_count_hexagon$`BUSINESS_COUNT`<- lengths(
+  st_intersects(
+   bus_count_hexagon, business))
+```
+
+```{r}
+summary(bus_count_hexagon$BUSINESS_COUNT)
+```
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+tm_shape(business) +
+  tm_dots()
+
+```
+
+### entertn
+
+```{r}
+entertn <- st_read(dsn = "data/geospatial",
+                   layer = "entertn") %>%
+  st_transform(crs = 3414)
+
+
+```
+
+```{r}
+bus_count_hexagon$`ENTERTN_COUNT`<- lengths(
+  st_intersects(
+   bus_count_hexagon, entertn))
+```
+
+```{r}
+summary(bus_count_hexagon$ENTERTN_COUNT)
+```
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+tm_shape(entertn) +
+  tm_dots()
+
+```
+
+###F&B
+
+```{r}
+fb <- st_read(dsn = "data/geospatial",
+                   layer = "F&B") %>%
+  st_transform(crs = 3414)
+
+
+```
+
+```{r}
+bus_count_hexagon$`FB_COUNT`<- lengths(
+  st_intersects(
+   bus_count_hexagon, fb))
+
+
+```
+
+```{r}
+summary(bus_count_hexagon$FB_COUNT)
+```
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+tm_shape(fb) +
+  tm_dots()
+
+```
+
+### FinServ
+
+```{r}
+finserv <- st_read(dsn = "data/geospatial",
+                   layer = "FINSERV") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+bus_count_hexagon$`FINSERV_COUNT`<- lengths(
+  st_intersects(
+   bus_count_hexagon, finserv))
+```
+
+```{r}
+summary(bus_count_hexagon$FINSERV_COUNT)
+```
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+tm_shape(finserv) +
+  tm_dots()
+
+```
+
+### RapidTransitSystemStation
+
+```{r}
+train <- st_read(dsn = "data/geospatial",
+                   layer = "Train_Station_Exit_Layer") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+bus_count_hexagon$`TRAIN_COUNT`<- lengths(
+  st_intersects(
+   bus_count_hexagon, train))
+```
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+tm_shape(train) +
+  tm_dots()
+
+```
+
+### HDB
+
+```{r}
+hdb <- read.csv("data/aspatial/hdb.csv")
+```
+
+```{r}
+hdb_sf <- st_as_sf(hdb,
+                   coords = c("lng", "lat"),
+                   crs=4326) %>%
+  st_transform(crs = 3414)
+
+
+```
+
+```{r}
+bus_count_hexagon$`HDB_COUNT`<- lengths(
+  st_intersects(
+   bus_count_hexagon, hdb_sf))
+```
+
+```{r}
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(bus_count_hexagon) +
+  tm_polygons() +
+tm_shape(hdb_sf) +
+  tm_dots()
+```
+:::
+
+```{r}
+bus_hexagon_tidy <- bus_count_hexagon %>%
+  st_drop_geometry() %>%
+  select(grid_id, ENTERTN_COUNT, BUSINESS_COUNT, FINSERV_COUNT,TRAIN_COUNT,HDB_COUNT,FB_COUNT )
+
+```
+
+```{r}
+flow_data <- od_data1 %>%
+  left_join(bus_hexagon_tidy,
+            by = c("DESTIN_SZ" = "grid_id"))
+
+```
+
+```{r}
+summary(flow_data)
+
+```
+
+##5.2replace 0 to 0.99 for the propulsive and attractiveness variables.
+
+```{r}
+flow_data$ENTERTN_COUNT <- ifelse(
+  flow_data$ENTERTN_COUNT == 0,
+  0.99, flow_data$ENTERTN_COUNT)
+flow_data$BUSINESS_COUNT <- ifelse(
+  flow_data$BUSINESS_COUNT == 0,
+  0.99, flow_data$BUSINESS_COUNT)
+flow_data$FINSERV_COUNT <- ifelse(
+  flow_data$FINSERV_COUNT == 0,
+  0.99, flow_data$FINSERV_COUNT)
+flow_data$TRAIN_COUNT <- ifelse(
+  flow_data$TRAIN_COUNT == 0,
+  0.99, flow_data$TRAIN_COUNT)
+flow_data$HDB_COUNT <- ifelse(
+  flow_data$HDB_COUNT == 0,
+  0.99, flow_data$HDB_COUNT)
+flow_data$FB_COUNT<- ifelse(
+  flow_data$FB_COUNT == 0,
+  0.99, flow_data$FB_COUNT)
+
+
+```
+
+```{r}
+summary(flow_data)
+
+```
+
+#6.Computing Distance Matrix
+
+##6.1Converting from sf data.table to SpatialPolygonsDataFrame
+
+```{r}
+bus_count_hexagon_sp <- as(bus_count_hexagon, "Spatial")
+bus_count_hexagon_sp
+
+
+```
+
+##6.2Computing the distance matrix
+
+```{r}
+dist <- spDists(bus_count_hexagon_sp, 
+                longlat = FALSE)
+head(dist, n=c(10, 10))
+
+
+```
+
+##6.3Labelling column and row heanders of a distance matrix
+
+we will create a list sorted according to the the distance matrix by planning sub-zone code.
+
+```{r}
+
+sz_names <- bus_count_hexagon_sp$grid_id
+
+```
+
+```{r}
+
+colnames(dist) <- paste0(sz_names)
+rownames(dist) <- paste0(sz_names)
+
+```
+
+##6.4Pivoting distance value by grid_id
+
+```{r}
+distPair <- melt(dist) %>%
+  rename(dist = value)
+head(distPair, 10)
+
+
+```
+
+##6.5Updating intra-zonal distances
+
+```{r}
+distPair %>%
+  filter(dist > 0) %>%
+  summary()
+```
+
+```{r}
+distPair$dist <- ifelse(distPair$dist == 0,
+                        50, distPair$dist)
+
+```
+
+```{r}
+distPair %>%
+  summary()
+
+```
+
+```{r}
+distPair <- distPair %>%
+  rename(orig = Var1,
+         dest = Var2)
+
+```
+
+```{r}
+distPair
+
+
+```
+
+```{r}
+write_rds(distPair, "data/rds/distPair.rds") 
+```
+
+#7.Spatial Interaction Modelling
+
+##7.1 Preparing flow data
+
+###7.1.1Preparing inter-zonal flow data
+
+```{r}
+flow_data$FlowNoIntra <- ifelse(
+  flow_data$DESTIN_SZ == flow_data$ORIGIN_SZ, 
+  0, flow_data$TOT_TRIPS)
+flow_data$offset <- ifelse(
+  flow_data$DESTIN_SZ == flow_data$ORIGIN_SZ, 
+  0.000001, 1)
+
+```
+
+###7.1.2 Combining flow data with distance value
+
+```{r}
+flow_data$ORIGIN_SZ <- as.factor(flow_data$ORIGIN_SZ)
+flow_data$DESTIN_SZ <- as.factor(flow_data$DESTIN_SZ)
+
+```
+
+```{r}
+flow_data$ORIGIN_SZ <- as.integer(as.character(flow_data$ORIGIN_SZ))
+flow_data$DESTIN_SZ <- as.integer(as.character(flow_data$DESTIN_SZ))
+
+
+flow_data1 <- flow_data %>%
+  left_join (distPair,
+             by = c("ORIGIN_SZ" = "orig",
+                    "DESTIN_SZ" = "dest"))
+
+```
+
+###7.1.3save rds
+
+```{r}
+duplicate <- flow_data1 %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+```
+
+```{r}
+flow_data1 <- unique(flow_data1)
+
+```
+
+```{r}
+write_rds(flow_data1, "data/rds/flow_data1.rds")
+
+```
+
+```{r}
+summary(flow_data1)
+```
+
+###7.1.4Calibrating Spatial Interaction Models
+
+```{r}
+
+
+flow_data1$FlowNoIntra <- ifelse(
+  flow_data1$ORIGIN_SZ == flow_data1$DESTIN_SZ, 
+  0, flow_data$TOT_TRIPS)
+flow_data1$offset <- ifelse(
+  flow_data1$ORIGIN_SZ == flow_data1$DESTIN_SZ, 
+  0.000001, 1)
+
+
+```
+
+```{r}
+
+duplicate <- flow_data1 %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+
+flow_data1 <- unique(flow_data)
+```
+
+```{r}
+summary(flow_data)
+```
+
+###7.1.5Combining passenger volume data with distance value
+
+```{r}
+flow_data1$ORIGIN_SZ <- as.factor(flow_data1$ORIGIN_SZ)
+flow_data1$DESTIN_SZ <- as.factor(flow_data1$DESTIN_SZ)
+distPair$orig <- as.factor(distPair$orig)
+distPair$dest <- as.factor(distPair$dest)
+```
+
+```{r}
+flow_data1 <- flow_data1 %>%
+  left_join (distPair,
+             by = c("ORIGIN_SZ" = "orig",
+                    "DESTIN_SZ" = "dest"))
+```
+
+###7.1.6Checking zero values
+
+Convert DESTIN_SZ and ORIGIN_SZ to character, in order to do poisson regression
+
+```{r}
+
+
+flow_data1$DESTIN_SZ <- as.character(flow_data1$DESTIN_SZ)
+flow_data1$ORIGIN_SZ <- as.character(flow_data1$ORIGIN_SZ)
+
+```
+
+filter FlowNoIntra \> 0 and save into a new data frame
+
+```{r}
+flow_data2 <- flow_data1 %>%
+  filter(FlowNoIntra > 0)
+
+summary(flow_data2)
+```
+
+###7.1.7 Correlation Analysis
+
+Identify if there are any correlation between variables
+
+```{r}
+vars.cor = cor(flow_data2[,3:9])
+corrplot.mixed(vars.cor,
+         lower = "ellipse", 
+               upper = "number",
+               tl.pos = "lt",
+               diag = "l",
+               tl.col = "black")
+
+
+```
+
+Based on the correlation result ,we will remove FINSERV_COUNT variable.
+
+##7.2 Unconstrained Model
+
+```{r}
+SIM<- glm(formula = TOT_TRIPS ~ 
+                log(ENTERTN_COUNT) +
+                log(BUSINESS_COUNT)+
+                log(TRAIN_COUNT)+
+                log(HDB_COUNT)+
+                log(FB_COUNT)+
+                log(dist),
+              family = poisson(link = "log"),
+              data = flow_data2,
+              na.action = na.exclude)
+
+
+```
+
+```{r}
+summary(SIM)
+
+```
+
+### 7.2.1 Goodness of fit
+
+```{r}
+CalcRSquared <- function(observed, estimated){
+  r <- cor(observed, estimated)
+  R2 <- r^2
+  R2
+}
+
+```
+
+```{r}
+CalcRSquared(SIM$data$TOT_TRIPS, SIM$fitted.values)
+
+```
+
+## 7.3 Origin- (Production-) constrained Model
+
+Code chunk below shows the calibration of the model by using glm() of R and flow_data.
+
+```{r}
+options(max.print = 10000)
+orcSIM_Poisson <- glm(formula = TOT_TRIPS ~ 
+                ORIGIN_SZ +
+                log(ENTERTN_COUNT) +
+                log(BUSINESS_COUNT)+
+                log(TRAIN_COUNT)+
+                log(HDB_COUNT)+
+                log(FB_COUNT)+
+                log(dist) - 1,
+              family = poisson(link = "log"),
+              data = flow_data2,
+              na.action = na.exclude)
+
+
+
+```
+
+```{r}
+summary(orcSIM_Poisson )
+```
+
+###7.3.1Goodness of fit
+
+```{r}
+CalcRSquared <- function(observed, estimated){
+  r <- cor(observed, estimated)
+  R2 <- r^2
+  R2
+}
+
+```
+
+```{r}
+CalcRSquared(orcSIM_Poisson$data$TOT_TRIPS, orcSIM_Poisson$fitted.values)
+
+```
+
+##7.4Doubly constrained model
+
+we will fit a doubly constrained SIM,code chunk used is shown below.
+
+```{r}
+dbcSIM_Poisson <- glm(formula = TOT_TRIPS ~ 
+                  ORIGIN_SZ +
+                  DESTIN_SZ +
+                  log(ENTERTN_COUNT) +
+                  log(BUSINESS_COUNT)+
+                  log(TRAIN_COUNT)+
+                  log(HDB_COUNT)+
+                  log(FB_COUNT)+
+                  log(dist),
+              family = poisson(link = "log"),
+              data = flow_data2,
+              na.action = na.exclude)
+
+
+```
+
+```{r}
+summary(dbcSIM_Poisson)
+
+```
+
+### 7.4.1Goodness of fit
+
+```{r}
+CalcRSquared(dbcSIM_Poisson$data$TOT_TRIPS, dbcSIM_Poisson$fitted.values)
+
+```
+
+##7.5 Destination constrained
+
+```{r}
+decSIM_Possion <- glm(formula = TOT_TRIPS ~ 
+                  DESTIN_SZ +
+                  log(ENTERTN_COUNT) +
+                  log(BUSINESS_COUNT)+
+                  log(TRAIN_COUNT)+
+                  log(HDB_COUNT)+
+                  log(FB_COUNT)+
+                  log(dist) - 1,
+              family = poisson(link = "log"),
+              data = flow_data2,
+              na.action = na.exclude)
+summary(decSIM_Possion)
+
+
+```
+
+###7.5.1 Goodness of fit
+
+```{r}
+
+CalcRSquared(decSIM_Possion$data$TOT_TRIPS, decSIM_Possion$fitted.values)
+
+```
+
+#8 Model comparison
+
+##8.1Statistical measures let us create a list called model_list by using the code chunk below.
+
+```{r}
+model_list <- list(
+  Unconstrained = SIM,
+  Origin_Constrained = orcSIM_Poisson,
+  Doubly_Constrained = dbcSIM_Poisson,
+  Destination_Constrained = decSIM_Possion)
+
+```
+
+compute the RMSE of all the models in model_list file by using the code chunk below.
+
+```{r}
+compare_performance(model_list,
+                    metrics = "RMSE")
+
+```
+
+The print above reveals that original constrained SIM is the best model among the four SIMs because it has the smallest RMSE value of 1219.272.
+
+##8.2 Visualising fitted values we will extract the fitted values from Origin-constrained Model by using the code chunk below.
+
+```{r}
+df <- as.data.frame(orcSIM_Poisson$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+flow_data2 <- flow_data2 %>%
+  cbind(df) %>%
+  rename(orcTRIPS = "orcSIM_Poisson$fitted.values")
+
+
+```
+
+```{r}
+summary(orcSIM_Poisson)
+
+```
+
+for dbcSIM
+
+```{r}
+df <- as.data.frame(dbcSIM_Poisson$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+flow_data2 <- flow_data2 %>%
+  cbind(df) %>%
+  rename(dbcTRIPS = "dbcSIM_Poisson$fitted.values")
+
+```
+
+for SIM
+
+```{r}
+df <- as.data.frame(SIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+flow_data2 <- flow_data2 %>%
+  cbind(df) %>%
+  rename(TRIPS = "SIM$fitted.values")
+
+```
+
+for dec_SIM
+
+```{r}
+df <- as.data.frame(decSIM_Possion$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+flow_data2 <- flow_data2 %>%
+  cbind(df) %>%
+  rename(decTRIPS = "decSIM_Possion$fitted.values")
+
+
+```
+
+four scatterplots will be created by using geom_point() and other appropriate functions of ggplot2 package.
+
+```{r}
+orc <- ggplot(data = flow_data2,
+                aes(x = orcTRIPS,
+                    y = TOT_TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  coord_cartesian(xlim=c(0,100000),
+                  ylim=c(0,100000))
+
+dbc <- ggplot(data = flow_data2,
+                aes(x = dbcTRIPS,
+                    y = TOT_TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  coord_cartesian(xlim=c(0,100000),
+                  ylim=c(0,100000))
+
+
+uc <- ggplot(data = flow_data2,
+                aes(x = TRIPS,
+                    y = TOT_TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  coord_cartesian(xlim=c(0,100000),
+                  ylim=c(0,100000))
+
+
+dec <- ggplot(data = flow_data2,
+                aes(x = decTRIPS,
+                    y = TOT_TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  coord_cartesian(xlim=c(0,100000),
+                  ylim=c(0,100000))
+
+```
+
+we will put all the graphs into a single visual for better comparison by using the code chunk below.
+
+```{r}
+ggarrange(dec, dbc,uc, orc, 
+          ncol = 2,
+          nrow = 2)
+
+
+```
+
+#9.Modelling Results
+
+Based on the R-squre result and the RMSE value.doubly constrained model has the largest R-squre value and smallest RMSE value,However, the relationship between many parameters is NA,so it cannot be used. So we choose the second largest R-squre value model,the original constraint model, and the R-squre is 0.37.
+The coefficient for TRAIN_COUNT is the most significant, This might be because larger areas with more of stations—like retail centers or city centers, where people move around more—are typically those with higher population densities.
+Followed by the ENTERN_COUNT and FB count,This may be due to the negative correlation in restaurants and entertainment venues where people stay indoors for long periods of time.
+FOr the last HDB_count,The correlation is weaker because of the increase in teleworking nowadays so people are not in the habit of going out .
+
+
